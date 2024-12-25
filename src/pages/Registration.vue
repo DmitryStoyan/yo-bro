@@ -1,6 +1,9 @@
 <script setup>
+import app from '../utils/firebase'
 import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword } from 'firebase/auth'
 import { ref } from 'vue';
+const auth = getAuth(app);
+
 
 const tab = ref('mails')
 const isLoading = ref(false)
@@ -18,7 +21,8 @@ const registerForm = ref({
 const signUp = async () => {
   isLoading.value = true
   try {
-    await createUserWithEmailAndPassword(getAuth(), loginForm.email.value, loginForm.password.value)
+    await createUserWithEmailAndPassword(auth, loginForm.value.email, loginForm.value.password)
+    console.log('1234')
   } catch (error) {
     console.log(error.message)
   } finally {
