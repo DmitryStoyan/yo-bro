@@ -1,6 +1,6 @@
 <template>
   <q-page class="flex flex-center">
-    <Registration />
+    <Authorization />
   </q-page>
 </template>
 
@@ -9,5 +9,5 @@ defineOptions({
   name: 'IndexPage'
 });
 
-import Registration from './Registration.vue'
+import Authorization from '../components/Authorization.vue'
 </script>

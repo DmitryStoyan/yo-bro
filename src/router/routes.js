@@ -1,14 +1,23 @@
+import { createRouter, createWebHistory } from "vue-router";
+import Authorization from "@/components/Authorization.vue";
+import PageHome from "@/views/PageHome.vue";
+
 const routes = [
   {
     path: "/",
-    component: () => import("layouts/MainLayout.vue"),
-    children: [{ path: "", component: () => import("pages/IndexPage.vue") }],
+    name: "Home",
+    component: PageHome,
   },
-
   {
-    path: "/:catchAll(.*)*",
-    component: () => import("pages/ErrorNotFound.vue"),
+    path: "/auth",
+    name: "Auth",
+    component: Authorization,
   },
 ];
 
-export default routes;
+const router = createRouter({
+  history: createWebHistory(),
+  routes,
+});
+
+export default router;
