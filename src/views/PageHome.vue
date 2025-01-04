@@ -1,13 +1,16 @@
+<template>
+  <q-page>
+    <h1>Главная страница</h1>
+    <p>Это приложение.....</p>
+    <q-btn label="Регистрация/Вход" @click="goToAuth" />
+  </q-page>
+</template>
+
 <script setup>
-const redirect = () => {
+import { useRouter } from 'vue-router';
+const router = useRouter()
+const goToAuth = () => {
   console.log('redirect');
-
-
+  router.push('/auth')
 }
 </script>
-
-<template>
-  <h2>PageHome</h2>
-  <button @click="redirect()">Регистрация/Вход</button>
-  <p><a href="/auth">Авторизация</a></p>
-</template>
