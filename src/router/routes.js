@@ -1,6 +1,6 @@
 import { createRouter, createWebHistory } from "vue-router";
 import MainLayout from "@/layouts/MainLayout.vue";
-import Authorization from "@/components/Authorization.vue";
+import AuthPage from "@/pages/AuthPage.vue";
 import PageHome from "@/views/PageHome.vue";
 import { useUserStore } from "@/stores/userStore";
 import { getAuth, onAuthStateChanged } from "firebase/auth";
@@ -41,7 +41,7 @@ const routes = [
       {
         path: "/auth",
         name: "Auth",
-        component: Authorization,
+        component: AuthPage,
         // beforeEnter: checkAuth,
       },
     ],
