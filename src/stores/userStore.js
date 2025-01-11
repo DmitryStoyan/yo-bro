@@ -1,30 +1,26 @@
 import { ref } from "vue";
 import { defineStore } from "pinia";
 import { getAuth, onAuthStateChanged } from "firebase/auth";
+import firebaseApp from "../utils/firebase";
 
 export const useUserStore = defineStore("user", () => {
-  const userId = ref("");
-  const userEmail = ref(""); // Новый реф для хранения email пользователя
+  const userId = ref(null);
+  const userEmail = ref(null);
 
-  // Инициализация Firebase Auth и отслеживание состояния
-  const initializeAuth = () => {
-    const auth = getAuth();
-    onAuthStateChanged(auth, (user) => {
-      if (user) {
-        userId.value = user.uid;
-        userEmail.value = user.email; // Сохраняем email
-        console.log("Пользователь авторизован:", user.email); // Логируем email
-      } else {
-        userId.value = "";
-        userEmail.value = "";
-        console.log("Пользователь не авторизован");
-      }
-    });
-  };
+  const auth = getAuth(firebaseApp);
+
+  onAuthStateChanged(auth, (user) => {
+    if (user) {
+      userId.value = user.uid;
+      userEmail.value = user.email;
+    } else {
+      userId.value = null;
+      userEmail.value = null;
+    }
+  });
 
   return {
     userId,
     userEmail,
-    initializeAuth, // Экспортируем метод инициализации
   };
 });

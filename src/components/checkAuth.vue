@@ -1,22 +1,30 @@
 <script setup>
-import { ref, onMounted } from 'vue';
-import { getAuth, onAuthStateChanged } from 'firebase/auth';
+import { ref, onMounted, watch } from 'vue';
+import { useUserStore } from 'src/stores/userStore';
+const userStore = useUserStore()
 
-const isAuthenticated = ref(false); // Флаг авторизации
+const isAuthenticated = ref(false);
 const userEmail = ref('');
 
-onMounted(() => {
-  const auth = getAuth();
-  onAuthStateChanged(auth, (user) => {
-    if (user) {
-      isAuthenticated.value = true;
-      userEmail.value = user.email;
-    } else {
-      isAuthenticated.value = false;
-      userEmail.value = '';
-    }
-  });
+// onMounted(() => {
+//   if (userStore.userEmail) {
+//     isAuthenticated.value = true;
+//     userEmail.value = userStore.userEmail
+//   } else {
+//     isAuthenticated.value = false;
+//   }
+// })
+
+watch(() => userStore.userEmail, (newEmail) => {
+  if (newEmail) {
+    isAuthenticated.value = true;
+    userEmail.value = newEmail;
+  } else {
+    isAuthenticated.value = false;
+    userEmail.value = '';
+  }
 });
+
 </script>
 
 <template>

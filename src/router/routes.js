@@ -2,6 +2,7 @@ import { createRouter, createWebHistory } from "vue-router";
 import MainLayout from "@/layouts/MainLayout.vue";
 import AuthPage from "@/pages/AuthPage.vue";
 import PageHome from "@/views/PageHome.vue";
+import UserProfilePage from "src/pages/UserProfilePage.vue";
 import { useUserStore } from "@/stores/userStore";
 import { getAuth, onAuthStateChanged } from "firebase/auth";
 
@@ -43,6 +44,12 @@ const routes = [
         name: "Auth",
         component: AuthPage,
         // beforeEnter: checkAuth,
+      },
+      {
+        path: "/profile",
+        name: "Profile",
+        component: UserProfilePage,
+        beforeEnter: checkAuth,
       },
     ],
   },
