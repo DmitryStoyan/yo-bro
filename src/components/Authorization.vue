@@ -5,7 +5,6 @@ import { useUserStore } from '@/stores/userStore';
 import { ref } from 'vue';
 const auth = getAuth(app);
 
-
 const tab = ref('mails')
 const isLoading = ref(false)
 
