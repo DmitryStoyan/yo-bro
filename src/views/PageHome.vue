@@ -3,6 +3,7 @@
     <h1>Главная страница</h1>
     <p>Это приложение.....</p>
     <q-btn label="Регистрация/Вход" @click="goToAuth" />
+    <q-btn label="Профиль" @click="goToProfile" />
     <checkAuth />
   </q-page>
 </template>
@@ -13,7 +14,9 @@ import checkAuth from 'src/components/checkAuth.vue';
 
 const router = useRouter()
 const goToAuth = () => {
-  console.log('redirect');
   router.push('/auth')
+}
+const goToProfile = () => {
+  router.push('/profile')
 }
 </script>
