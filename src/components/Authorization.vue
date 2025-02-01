@@ -3,6 +3,9 @@ import app from '../utils/firebase'
 import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword } from 'firebase/auth'
 import { useUserStore } from '@/stores/userStore';
 import { ref } from 'vue';
+import { useRouter } from 'vue-router';
+
+const router = useRouter()
 const auth = getAuth(app);
 
 const tab = ref('mails')
@@ -34,6 +37,7 @@ const signIn = async () => {
   isLoading.value = true
   try {
     await signInWithEmailAndPassword(auth, loginForm.value.email, loginForm.value.password)
+    router.push('/')
     console.log('Вход выполнен')
   } catch (error) {
     console.log(error.message)

@@ -1,7 +1,7 @@
 <script setup>
-import { onMounted, ref, watch, nextTick, watchEffect } from 'vue';
+import { ref } from 'vue';
 import { getAuth } from 'firebase/auth';
-import { getFirestore, setDoc, doc, updateDoc, getDoc } from 'firebase/firestore'
+import { getFirestore } from 'firebase/firestore'
 import { useUserStore } from '@/stores/userStore';
 import { v4 as uuidv4 } from 'uuid';
 
@@ -13,8 +13,9 @@ const isLoading = ref(false)
 
 const updateProfile = async () => {
   isLoading.value = true;
-  await userStore.updateProfile(userStore.userName)
+  await userStore.updateUserProfile(userStore.userName)
   isLoading.value = false;
+  console.log('Имя пользователя изменено на: ', userStore.userName)
 }
 
 </script>
@@ -30,7 +31,7 @@ const updateProfile = async () => {
       </q-img>
       <q-input class="q-mb-md" outlined label="Email" v-model="userStore.userEmail" readonly />
       <q-input class="q-mb-md" outlined label="Имя пользователя" v-model="userStore.userName" />
-      <q-btn label="Сохранить" color="blue" @click="addedProfileInfo" />
+      <q-btn label="Сохранить" color="blue" @click="updateProfile" />
     </div>
     <h2> Email: {{ userStore.userEmail }}</h2>
   </q-page>

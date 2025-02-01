@@ -1,6 +1,6 @@
 import { ref, watch } from "vue";
 import { defineStore } from "pinia";
-import { getAuth, onAuthStateChanged } from "firebase/auth";
+import { getAuth, onAuthStateChanged, signOut } from "firebase/auth";
 import {
   getFirestore,
   doc,
@@ -54,10 +54,23 @@ export const useUserStore = defineStore("user", () => {
     }
   };
 
+  const lotOut = async () => {
+    try {
+      await signOut(auth);
+      userId.value = null;
+      userEmail.value = null;
+      userName.value = "";
+      console.log("Пользователь вышел из системы");
+    } catch (error) {
+      console.error("Ошибка при выходе", error);
+    }
+  };
+
   onAuthStateChanged(auth, async (user) => {
     if (user) {
       userId.value = user.uid;
       userEmail.value = user.email;
+      userName.value = user.userName;
       await fetchUserProfile();
     } else {
       userId.value = null;
@@ -72,5 +85,6 @@ export const useUserStore = defineStore("user", () => {
     userName,
     fetchUserProfile,
     updateUserProfile,
+    lotOut,
   };
 });
