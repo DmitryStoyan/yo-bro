@@ -1,12 +1,15 @@
-import { ref, watch } from "vue";
+import { ref } from "vue";
 import { defineStore } from "pinia";
 import { getAuth, onAuthStateChanged, signOut } from "firebase/auth";
 import {
   getFirestore,
   doc,
   getDoc,
+  getDocs,
   setDoc,
   updateDoc,
+  query,
+  collectionGroup,
 } from "firebase/firestore";
 import firebaseApp from "../utils/firebase";
 
@@ -19,10 +22,7 @@ export const useUserStore = defineStore("user", () => {
   const db = getFirestore(firebaseApp);
 
   const fetchUserProfile = async () => {
-    if (!userId.value) {
-      return;
-    }
-
+    if (!userId.value) return;
     const docRef = doc(db, `users/${userId.value}/ProfileInfo`, "main");
     const docSnap = await getDoc(docRef);
 
@@ -35,7 +35,6 @@ export const useUserStore = defineStore("user", () => {
 
   const updateUserProfile = async (newName) => {
     if (!userId.value) return;
-
     const docRef = doc(db, `users/${userId.value}/ProfileInfo`, "main");
 
     try {
@@ -66,11 +65,24 @@ export const useUserStore = defineStore("user", () => {
     }
   };
 
+  const getAllUsers = async () => {
+    try {
+      console.log("Запрашиваем всех пользователей...");
+      const profilesQuery = query(collectionGroup(db, "ProfileInfo"));
+      const listDocs = await getDocs(profilesQuery);
+      console.log("Найдено пользователей:", listDocs.size);
+      listDocs.forEach((doc) => {
+        console.log("Пользователь:", doc.id, "=>", doc.data());
+      });
+    } catch (error) {
+      console.error("Ошибка при получении пользователей:", error);
+    }
+  };
+
   onAuthStateChanged(auth, async (user) => {
     if (user) {
       userId.value = user.uid;
       userEmail.value = user.email;
-      userName.value = user.userName;
       await fetchUserProfile();
     } else {
       userId.value = null;
@@ -86,5 +98,6 @@ export const useUserStore = defineStore("user", () => {
     fetchUserProfile,
     updateUserProfile,
     lotOut,
+    getAllUsers,
   };
 });

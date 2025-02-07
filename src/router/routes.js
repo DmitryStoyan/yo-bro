@@ -3,6 +3,8 @@ import MainLayout from "@/layouts/MainLayout.vue";
 import AuthPage from "@/pages/AuthPage.vue";
 import PageHome from "@/views/PageHome.vue";
 import UserProfilePage from "src/pages/UserProfilePage.vue";
+import FriendsList from "src/components/FriendsList.vue";
+import Notification from "src/components/Notification.vue";
 import { useUserStore } from "@/stores/userStore";
 import { getAuth, onAuthStateChanged } from "firebase/auth";
 
@@ -49,6 +51,18 @@ const routes = [
         path: "/profile",
         name: "Profile",
         component: UserProfilePage,
+        beforeEnter: checkAuth,
+      },
+      {
+        path: "/friendsList",
+        name: "friendsList",
+        component: FriendsList,
+        beforeEnter: checkAuth,
+      },
+      {
+        path: "/notification",
+        name: "notification",
+        component: Notification,
         beforeEnter: checkAuth,
       },
     ],

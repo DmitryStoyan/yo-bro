@@ -5,6 +5,8 @@
     <q-btn label="Регистрация/Вход" @click="goToAuth" v-if="!userStore.userId" />
     <q-btn label="Выход" @click="logOut" v-else />
     <q-btn label="Профиль" @click="goToProfile" />
+    <q-btn label="Друзья" @click="goToFriendsList" />
+    <q-btn label="Уведомления" @click="goToNotification" />
     <checkAuth />
   </q-page>
 </template>
@@ -23,6 +25,16 @@ const goToAuth = () => {
 const goToProfile = () => {
   router.push('/profile')
 }
+
+const goToFriendsList = () => {
+  router.push('/friendsList')
+}
+
+const goToNotification = () => {
+  router.push('/notification')
+}
+
+
 
 const logOut = async () => {
   await userStore.lotOut()
