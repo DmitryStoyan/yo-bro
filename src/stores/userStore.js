@@ -10,6 +10,7 @@ import {
   updateDoc,
   query,
   collectionGroup,
+  where,
 } from "firebase/firestore";
 import firebaseApp from "../utils/firebase";
 
@@ -17,6 +18,7 @@ export const useUserStore = defineStore("user", () => {
   const userId = ref(null);
   const userEmail = ref(null);
   const userName = ref("");
+  const searchResults = ref([]);
 
   const auth = getAuth(firebaseApp);
   const db = getFirestore(firebaseApp);
@@ -72,10 +74,33 @@ export const useUserStore = defineStore("user", () => {
       const listDocs = await getDocs(profilesQuery);
       console.log("Найдено пользователей:", listDocs.size);
       listDocs.forEach((doc) => {
+        const data = doc.data();
         console.log("Пользователь:", doc.id, "=>", doc.data());
+        console.log(data.userName);
       });
     } catch (error) {
       console.error("Ошибка при получении пользователей:", error);
+    }
+  };
+
+  const searchUsers = async (searchTerm) => {
+    try {
+      console.log("Поиск по userName...");
+      const profilesQuery = query(
+        collectionGroup(db, "ProfileInfo"),
+        where("userName", ">=", searchTerm),
+        where("userName", "<=", searchTerm + "\uf8ff")
+      );
+      const listDocs = await getDocs(profilesQuery);
+      searchResults.value = listDocs.docs.map((doc) => {
+        const userData = doc.data();
+        const userId = doc.id;
+        const userObject = { id: userId, ...userData };
+
+        return userObject;
+      });
+    } catch (error) {
+      console.error(error);
     }
   };
 
@@ -95,9 +120,11 @@ export const useUserStore = defineStore("user", () => {
     userId,
     userEmail,
     userName,
+    searchResults,
     fetchUserProfile,
     updateUserProfile,
     lotOut,
     getAllUsers,
+    searchUsers,
   };
 });
