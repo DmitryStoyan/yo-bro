@@ -27,9 +27,13 @@ watchEffect(() => {
     <q-input outlined v-model="searchQuery" label="Поиск пользователей" />
     <q-btn label="Поиск" color="primary" @click="loadUsers(searchQuery)" class="q-mt-md" />
 
-    <ul>
+    <p v-if="searchResults.length === 0">Пользователи не найдены</p>
+
+    <ul v-else>
       <li v-for="user in searchResults" :key="user.id">
         {{ user.userName }}
+        <q-btn round color="green" icon="add" />
+        <q-btn round color="red" icon="close" />
       </li>
     </ul>
 

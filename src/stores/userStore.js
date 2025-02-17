@@ -42,10 +42,14 @@ export const useUserStore = defineStore("user", () => {
     try {
       const docSnap = await getDoc(docRef);
       if (docSnap.exists()) {
-        await updateDoc(docRef, { userName: newName });
+        await updateDoc(docRef, {
+          userName: newName,
+          userNameLower: newName.toLowerCase(),
+        });
       } else {
         await setDoc(docRef, {
           userName: newName,
+          userNameLower: newName.toLowerCase(),
           friends: [],
         });
       }
@@ -86,10 +90,18 @@ export const useUserStore = defineStore("user", () => {
   const searchUsers = async (searchTerm) => {
     try {
       console.log("Поиск по userName...");
+      if (!searchTerm || searchTerm.trim() === "") {
+        console.warn("Поисковый запрос пустой!");
+        searchResults.value = [];
+        return;
+      }
+
+      const searchTermLower = searchTerm.toLowerCase();
+
       const profilesQuery = query(
         collectionGroup(db, "ProfileInfo"),
-        where("userName", ">=", searchTerm),
-        where("userName", "<=", searchTerm + "\uf8ff")
+        where("userNameLower", ">=", searchTermLower),
+        where("userNameLower", "<=", searchTermLower + "\uf8ff")
       );
       const listDocs = await getDocs(profilesQuery);
       searchResults.value = listDocs.docs.map((doc) => {
