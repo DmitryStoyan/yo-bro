@@ -16,6 +16,10 @@ const loadUsers = async (query) => {
   console.log(query.value)
 }
 
+const sendRequest = async (userId, userName) => {
+  await userStore.sendFriendRequest(userId, userName)
+}
+
 watchEffect(() => {
   searchResults.value = userStore.searchResults
 })
@@ -32,8 +36,7 @@ watchEffect(() => {
     <ul v-else>
       <li v-for="user in searchResults" :key="user.id">
         {{ user.userName }}
-        <q-btn round color="green" icon="add" />
-        <q-btn round color="red" icon="close" />
+        <q-btn round color="green" icon="add" @click="sendRequest(user.id, user.userName)" />
       </li>
     </ul>
 

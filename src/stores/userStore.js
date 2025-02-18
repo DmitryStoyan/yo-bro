@@ -106,13 +106,41 @@ export const useUserStore = defineStore("user", () => {
       const listDocs = await getDocs(profilesQuery);
       searchResults.value = listDocs.docs.map((doc) => {
         const userData = doc.data();
-        const userId = doc.id;
+        const userId = doc.ref.parent.parent.id;
         const userObject = { id: userId, ...userData };
 
         return userObject;
       });
     } catch (error) {
       console.error(error);
+    }
+  };
+
+  const sendFriendRequest = async (receiverId, receiverName) => {
+    if (!userId.value) return;
+
+    const requestRef = doc(db, `friendRequests/${userId.value}_${receiverId}`);
+
+    try {
+      const requestSnap = await getDoc(requestRef);
+
+      if (requestSnap.exists()) {
+        console.warn("Запрос уже отправлен");
+        return;
+      }
+
+      await setDoc(requestRef, {
+        fromUserId: userId.value,
+        fromUserName: userName.value,
+        toUserId: receiverId,
+        toUserName: receiverName,
+        status: "pending",
+        timestamp: new Date(),
+      });
+
+      console.log(`Запрос в друзья отправлен пользователю ${receiverName}`);
+    } catch (error) {
+      console.error("Ошибка при отправке запроса в друзья:", error);
     }
   };
 
@@ -138,5 +166,6 @@ export const useUserStore = defineStore("user", () => {
     lotOut,
     getAllUsers,
     searchUsers,
+    sendFriendRequest,
   };
 });
