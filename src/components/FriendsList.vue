@@ -1,47 +1,54 @@
 <script setup>
-import { ref, watchEffect } from "vue";
+import { ref, watchEffect, onMounted } from "vue";
 import { useUserStore } from "src/stores/userStore";
+import { getFirestore, doc, getDoc } from "firebase/firestore";
+import firebaseApp from "src/utils/firebase";
 
+const db = getFirestore(firebaseApp);
 const userStore = useUserStore();
 
-const searchQuery = ref('');
-const searchResults = ref([]);
+const loadAllUser = async () => {
+  await userStore.getAllUsers();
+};
 
-const loadAllUsers = async () => {
-  await userStore.getAllUsers()
-}
+const checkRequest = async (receiverId) => {
+  if (!userStore.userId) return false;
 
-const loadUsers = async (query) => {
-  await userStore.searchUsers(query)
-  console.log(query.value)
-}
 
-const sendRequest = async (userId, userName) => {
-  await userStore.sendFriendRequest(userId, userName)
-}
+  const requestId = `${userStore.userId}_${receiverId}`;
+  console.log("Ищем документ с ID:", requestId);
+
+  const requestRef = doc(db, "friendRequests", requestId);
+  const requestSnap = await getDoc(requestRef);
+
+  if (requestSnap.exists()) {
+    console.log("Документ найден:", requestSnap.data());
+    const requestData = requestSnap.data()
+    if (requestData.status === 'pending') {
+      console.log('Статус запроса - pending')
+      return true
+    }
+  } else {
+    console.log("Документ НЕ найден!");
+  }
+
+  return false
+};
+
 
 watchEffect(() => {
-  searchResults.value = userStore.searchResults
-})
+  if (userStore.userId) {
+    checkRequest("Dyn8ztPLyVO06PChaQRwKXPowmX2");
+  }
+});
+
 </script>
 
 <template>
   <div>
     <h2>Список всех пользователей</h2>
     <q-input outlined v-model="searchQuery" label="Поиск пользователей" />
-    <q-btn label="Поиск" color="primary" @click="loadUsers(searchQuery)" class="q-mt-md" />
-
-    <p v-if="searchResults.length === 0">Пользователи не найдены</p>
-
-    <ul v-else>
-      <li v-for="user in searchResults" :key="user.id">
-        {{ user.userName }}
-        <q-btn round color="green" icon="add" @click="sendRequest(user.id, user.userName)" />
-      </li>
-    </ul>
-
-
-    <q-btn label="Вывести всех пользователей" color="primary" @click="loadAllUsers" class="q-mt-md" />
-
+    <q-btn label="Поиск" color="primary" class="q-mt-md" />
+    <q-btn label="Вывести всех пользователей" color="primary" @click="loadAllUser" class="q-mt-md" />
   </div>
 </template>
