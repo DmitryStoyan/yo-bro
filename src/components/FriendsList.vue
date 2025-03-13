@@ -6,6 +6,8 @@ import firebaseApp from "src/utils/firebase";
 
 const db = getFirestore(firebaseApp);
 const userStore = useUserStore();
+const searchQuery = ref('')
+const searchResults = ref([]);
 
 const loadAllUser = async () => {
   await userStore.getAllUsers();
@@ -25,7 +27,7 @@ const checkRequest = async (receiverId) => {
     console.log("Документ найден:", requestSnap.data());
     const requestData = requestSnap.data()
     if (requestData.status === 'pending') {
-      console.log('Статус запроса - pending')
+      console.log('Статус запроса: ' + requestData.status)
       return true
     }
   } else {
@@ -35,11 +37,24 @@ const checkRequest = async (receiverId) => {
   return false
 };
 
+const updateRequestStatus = async () => {
+  for (const user of userStore.searchResults) {
+    user.requestPending = await checkRequest(user.id)
+  }
+}
+
+const loadUsers = async (query) => {
+  await userStore.searchUsers(query);
+  await updateRequestStatus();
+  searchResults.value = userStore.searchResults
+}
+
 
 watchEffect(() => {
   if (userStore.userId) {
     checkRequest("Dyn8ztPLyVO06PChaQRwKXPowmX2");
   }
+  searchResults.value = userStore.searchResults;
 });
 
 </script>
@@ -48,7 +63,13 @@ watchEffect(() => {
   <div>
     <h2>Список всех пользователей</h2>
     <q-input outlined v-model="searchQuery" label="Поиск пользователей" />
-    <q-btn label="Поиск" color="primary" class="q-mt-md" />
+    <q-btn label="Поиск" color="primary" @click="loadUsers(searchQuery)" class="q-mt-md" />
     <q-btn label="Вывести всех пользователей" color="primary" @click="loadAllUser" class="q-mt-md" />
+
+    <p v-if="searchResults.length === 0">Пользователи не найдены</p>
+
+    <ul v-else>
+      <li v-for="user in searchResults" :key="user.id">{{ user.userName }}</li>
+    </ul>
   </div>
 </template>
