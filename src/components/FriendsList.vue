@@ -49,6 +49,14 @@ const loadUsers = async (query) => {
   searchResults.value = userStore.searchResults
 }
 
+const sendRequest = async (userId, userName) => {
+  await userStore.sendFriendRequest(userId, userName)
+  const user = searchResults.value.find(u => u.id === userId)
+  if (user) {
+    user.requestPending = true
+  }
+}
+
 
 watchEffect(() => {
   if (userStore.userId) {
@@ -69,7 +77,11 @@ watchEffect(() => {
     <p v-if="searchResults.length === 0">Пользователи не найдены</p>
 
     <ul v-else>
-      <li v-for="user in searchResults" :key="user.id">{{ user.userName }}</li>
+      <li v-for="user in searchResults" :key="user.id">
+        {{ user.userName }}
+        <q-btn v-if="user.requestPending" round color="red" icon="delete" />
+        <q-btn v-else round color="green" icon="add" @click="sendRequest(user.id, user.userName)" />
+      </li>
     </ul>
   </div>
 </template>

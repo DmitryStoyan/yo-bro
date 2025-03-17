@@ -59,7 +59,7 @@ export const useUserStore = defineStore("user", () => {
     }
   };
 
-  const lotOut = async () => {
+  const logOut = async () => {
     try {
       await signOut(auth);
       userId.value = null;
@@ -163,7 +163,7 @@ export const useUserStore = defineStore("user", () => {
     searchResults,
     fetchUserProfile,
     updateUserProfile,
-    lotOut,
+    logOut,
     getAllUsers,
     searchUsers,
     sendFriendRequest,

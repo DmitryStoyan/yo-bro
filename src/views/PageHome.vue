@@ -37,7 +37,7 @@ const goToNotification = () => {
 
 
 const logOut = async () => {
-  await userStore.lotOut()
+  await userStore.logOut()
   router.push('/auth')
 }
 </script>
