@@ -11,6 +11,7 @@ import {
   query,
   collectionGroup,
   where,
+  deleteDoc,
 } from "firebase/firestore";
 import firebaseApp from "../utils/firebase";
 
@@ -144,6 +145,20 @@ export const useUserStore = defineStore("user", () => {
     }
   };
 
+  const cancelFriendRequest = async (receiverId) => {
+    const requestId = `${userId.value}_${receiverId}`;
+    const requestRef = doc(db, "friendRequests", requestId);
+    try {
+      const requestSnap = await getDoc(requestRef);
+      if (requestSnap.exists()) {
+        await deleteDoc(requestRef);
+        console.log("Запрос в друзья отменен");
+      }
+    } catch (error) {
+      console.error("Ошибка при отмене запроса в друзья:", error);
+    }
+  };
+
   onAuthStateChanged(auth, async (user) => {
     if (user) {
       userId.value = user.uid;
@@ -167,5 +182,6 @@ export const useUserStore = defineStore("user", () => {
     getAllUsers,
     searchUsers,
     sendFriendRequest,
+    cancelFriendRequest,
   };
 });

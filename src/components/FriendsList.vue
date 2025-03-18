@@ -57,11 +57,15 @@ const sendRequest = async (userId, userName) => {
   }
 }
 
+const cancelRequest = async (userId) => {
+  await userStore.cancelFriendRequest(userId)
+  const user = searchResults.value.find(u => u.id === userId)
+  if (user) {
+    user.requestPending = false
+  }
+}
 
 watchEffect(() => {
-  if (userStore.userId) {
-    checkRequest("Dyn8ztPLyVO06PChaQRwKXPowmX2");
-  }
   searchResults.value = userStore.searchResults;
 });
 
@@ -79,7 +83,7 @@ watchEffect(() => {
     <ul v-else>
       <li v-for="user in searchResults" :key="user.id">
         {{ user.userName }}
-        <q-btn v-if="user.requestPending" round color="red" icon="delete" />
+        <q-btn v-if="user.requestPending" round color="red" icon="delete" @click="cancelRequest(user.id)" />
         <q-btn v-else round color="green" icon="add" @click="sendRequest(user.id, user.userName)" />
       </li>
     </ul>
