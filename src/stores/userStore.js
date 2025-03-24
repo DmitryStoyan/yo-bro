@@ -12,6 +12,7 @@ import {
   collectionGroup,
   where,
   deleteDoc,
+  collection,
 } from "firebase/firestore";
 import firebaseApp from "../utils/firebase";
 
@@ -20,6 +21,7 @@ export const useUserStore = defineStore("user", () => {
   const userEmail = ref(null);
   const userName = ref("");
   const searchResults = ref([]);
+  const incomingRequests = ref([]);
 
   const auth = getAuth(firebaseApp);
   const db = getFirestore(firebaseApp);
@@ -159,6 +161,29 @@ export const useUserStore = defineStore("user", () => {
     }
   };
 
+  const getFriendRequests = async () => {
+    try {
+      const friendQuery = query(
+        collection(db, "friendRequests"),
+        where("toUserId", "==", userId.value)
+      );
+
+      const querySnapshot = await getDocs(friendQuery);
+
+      incomingRequests.value = [];
+
+      querySnapshot.forEach((doc) => {
+        console.log("fromUserName:", doc.data().fromUserName);
+        incomingRequests.value.push({
+          id: doc.id,
+          fromUserName: doc.data().fromUserName,
+        });
+      });
+    } catch (error) {
+      console.error("Ошибка при получении запросов в друзья:", error);
+    }
+  };
+
   onAuthStateChanged(auth, async (user) => {
     if (user) {
       userId.value = user.uid;
@@ -176,6 +201,7 @@ export const useUserStore = defineStore("user", () => {
     userEmail,
     userName,
     searchResults,
+    incomingRequests,
     fetchUserProfile,
     updateUserProfile,
     logOut,
@@ -183,5 +209,6 @@ export const useUserStore = defineStore("user", () => {
     searchUsers,
     sendFriendRequest,
     cancelFriendRequest,
+    getFriendRequests,
   };
 });
