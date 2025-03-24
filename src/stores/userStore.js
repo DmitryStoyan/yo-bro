@@ -13,6 +13,7 @@ import {
   where,
   deleteDoc,
   collection,
+  onSnapshot,
 } from "firebase/firestore";
 import firebaseApp from "../utils/firebase";
 
@@ -168,16 +169,17 @@ export const useUserStore = defineStore("user", () => {
         where("toUserId", "==", userId.value)
       );
 
-      const querySnapshot = await getDocs(friendQuery);
+      onSnapshot(friendQuery, (querySnapshot) => {
+        incomingRequests.value = [];
 
-      incomingRequests.value = [];
-
-      querySnapshot.forEach((doc) => {
-        console.log("fromUserName:", doc.data().fromUserName);
-        incomingRequests.value.push({
-          id: doc.id,
-          fromUserName: doc.data().fromUserName,
+        querySnapshot.forEach((doc) => {
+          incomingRequests.value.push({
+            id: doc.id,
+            fromUserName: doc.data().fromUserName,
+          });
         });
+
+        console.log("Обновленные запросы:", incomingRequests.value);
       });
     } catch (error) {
       console.error("Ошибка при получении запросов в друзья:", error);
