@@ -8,6 +8,11 @@ import firebaseApp from "src/utils/firebase";
 const userStore = useUserStore();
 const db = getFirestore(firebaseApp);
 
+const deleteRequest = async (requestId) => {
+  await userStore.declineFriendRequest(requestId)
+  console.log(requestId)
+}
+
 onMounted(() => {
   userStore.getFriendRequests()
 })
@@ -27,6 +32,8 @@ watchEffect(() => {
     <ul v-else>
       <li v-for="request in userStore.incomingRequests" :key="request.id">
         {{ request.fromUserName }}
+        <q-btn round color="green" icon="add" />
+        <q-btn round color="red" icon="cancel" @click="deleteRequest(request.id)" />
       </li>
     </ul>
   </div>

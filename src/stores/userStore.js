@@ -186,6 +186,19 @@ export const useUserStore = defineStore("user", () => {
     }
   };
 
+  const declineFriendRequest = async (requestId) => {
+    const requestRef = doc(db, "friendRequests", requestId);
+    try {
+      const requestSnap = await getDoc(requestRef);
+      if (requestSnap.exists()) {
+        await deleteDoc(requestRef);
+        console.log("Запрос в друзья отклонен");
+      }
+    } catch (error) {
+      console.error("Ошибка при отклонении запроса в друзья:", error);
+    }
+  };
+
   onAuthStateChanged(auth, async (user) => {
     if (user) {
       userId.value = user.uid;
@@ -212,5 +225,6 @@ export const useUserStore = defineStore("user", () => {
     sendFriendRequest,
     cancelFriendRequest,
     getFriendRequests,
+    declineFriendRequest,
   };
 });
