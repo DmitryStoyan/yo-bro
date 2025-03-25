@@ -14,6 +14,7 @@ import {
   deleteDoc,
   collection,
   onSnapshot,
+  arrayUnion,
 } from "firebase/firestore";
 import firebaseApp from "../utils/firebase";
 
@@ -199,6 +200,35 @@ export const useUserStore = defineStore("user", () => {
     }
   };
 
+  const acceptFriendRequest = async (requestId) => {
+    if (!userId.value) return;
+
+    const requestRef = doc(db, "friendRequests", requestId);
+    const requestSnap = await getDoc(requestRef);
+
+    if (requestSnap.exists()) {
+      const requestData = requestSnap.data();
+      const { fromUserId, toUserId } = requestData;
+
+      const fromUserRef = doc(db, "users", fromUserId, "ProfileInfo", "main");
+      const toUserRef = doc(db, "users", toUserId, "ProfileInfo", "main");
+
+      await updateDoc(fromUserRef, {
+        friends: arrayUnion(toUserId),
+      });
+
+      await updateDoc(toUserRef, {
+        friends: arrayUnion(fromUserId),
+      });
+
+      await deleteDoc(requestRef);
+
+      console.log("Запрос принят, пользователи добавлены в друзья");
+    } else {
+      console.error("Запрос не найден");
+    }
+  };
+
   onAuthStateChanged(auth, async (user) => {
     if (user) {
       userId.value = user.uid;
@@ -226,5 +256,6 @@ export const useUserStore = defineStore("user", () => {
     cancelFriendRequest,
     getFriendRequests,
     declineFriendRequest,
+    acceptFriendRequest,
   };
 });

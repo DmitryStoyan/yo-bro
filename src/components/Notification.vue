@@ -13,6 +13,10 @@ const deleteRequest = async (requestId) => {
   console.log(requestId)
 }
 
+const acceptFriendRequest = async (requestId) => {
+  await userStore.acceptFriendRequest(requestId);
+}
+
 onMounted(() => {
   userStore.getFriendRequests()
 })
@@ -32,7 +36,7 @@ watchEffect(() => {
     <ul v-else>
       <li v-for="request in userStore.incomingRequests" :key="request.id">
         {{ request.fromUserName }}
-        <q-btn round color="green" icon="add" />
+        <q-btn round color="green" icon="add" @click="acceptFriendRequest(request.id)" />
         <q-btn round color="red" icon="cancel" @click="deleteRequest(request.id)" />
       </li>
     </ul>
