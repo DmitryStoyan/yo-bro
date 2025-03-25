@@ -8,6 +8,11 @@ const db = getFirestore(firebaseApp);
 const userStore = useUserStore();
 const searchQuery = ref('')
 const searchResults = ref([]);
+const friendsList = ref([]);
+
+const loadFriends = async () => {
+  friendsList.value = await userStore.getFriends();
+};
 
 const loadAllUser = async () => {
   await userStore.getAllUsers();
@@ -69,6 +74,11 @@ watchEffect(() => {
   searchResults.value = userStore.searchResults;
 });
 
+onMounted(() => {
+  loadFriends();
+});
+
+
 </script>
 
 <template>
@@ -85,6 +95,13 @@ watchEffect(() => {
         {{ user.userName }}
         <q-btn v-if="user.requestPending" round color="red" icon="delete" @click="cancelRequest(user.id)" />
         <q-btn v-else round color="green" icon="add" @click="sendRequest(user.id, user.userName)" />
+      </li>
+    </ul>
+
+    <p v-if="friendsList.length === 0">У вас нет добавленных друзей</p>
+    <ul v-else>
+      <li v-for="friend in friendsList" :key="friend">
+        {{ friend }}
       </li>
     </ul>
   </div>

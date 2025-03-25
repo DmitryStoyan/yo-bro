@@ -229,6 +229,38 @@ export const useUserStore = defineStore("user", () => {
     }
   };
 
+  const getFriends = async () => {
+    if (!userId.value) return [];
+
+    try {
+      const userRef = doc(db, "users", userId.value, "ProfileInfo", "main");
+      const userSnap = await getDoc(userRef);
+
+      if (userSnap.exists()) {
+        const userData = userSnap.data();
+        const friendIds = userData.friends || [];
+
+        const friendsNames = [];
+        for (const friendId of friendIds) {
+          const friendRef = doc(db, "users", friendId, "ProfileInfo", "main");
+          const friendSnap = await getDoc(friendRef);
+          if (friendSnap.exists()) {
+            const friendData = friendSnap.data();
+            friendsNames.push(friendData.userName);
+          }
+        }
+
+        return friendsNames;
+      } else {
+        console.log("Пользователь не найден");
+        return [];
+      }
+    } catch (error) {
+      console.error("Ошибка при получении друзей:", error);
+      return [];
+    }
+  };
+
   onAuthStateChanged(auth, async (user) => {
     if (user) {
       userId.value = user.uid;
@@ -257,5 +289,6 @@ export const useUserStore = defineStore("user", () => {
     getFriendRequests,
     declineFriendRequest,
     acceptFriendRequest,
+    getFriends,
   };
 });

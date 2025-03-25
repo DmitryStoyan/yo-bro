@@ -1,5 +1,8 @@
 <template>
-  <q-page>
+  <q-page class="page">
+
+    <q-img class="bg-img" src="../assets/background/homeBG.gif" />
+
     <h1>Главная страница</h1>
     <p>Это приложение..... Тут будет описание</p>
     <q-btn label="Регистрация/Вход" @click="goToAuth" v-if="!userStore.userId" />
@@ -41,3 +44,20 @@ const logOut = async () => {
   router.push('/auth')
 }
 </script>
+
+<style scoped>
+.page {
+  position: relative;
+  height: 100vh;
+}
+
+.bg-img {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  top: 0;
+  left: 0;
+  object-fit: cover;
+  z-index: -1;
+}
+</style>
