@@ -1,27 +1,29 @@
 <template>
   <q-page class="page">
+    <div class="layout">
 
-    <q-img class="bg-img" src="../assets/background/homeBG.gif" />
+      <q-img class="bg-img" src="../assets/background/homeBG.gif" />
 
-    <header class="header">
-      <img class="logo" src="../assets/logo/logo.jpg" alt="Yo">
-      <q-btn class="auth-btn" label="Регистрация/Вход" @click="goToAuth" v-if="!userStore.userId" />
-      <q-btn class="auth-btn" label="Выход" @click="logOut" v-else />
-    </header>
+      <header class="header">
+        <img class="logo" src="../assets/logo/logo.jpg" alt="Yo">
+        <q-btn class="auth-btn" label="Регистрация/Вход" @click="goToAuth" v-if="!userStore.userId" />
+        <q-btn class="auth-btn" label="Выход" @click="logOut" v-else />
+      </header>
 
-    <div class="description-wrapper">
-      <h1 class="title">Yo Bro</h1>
-      <p class="subtitle">Простой способ сказать Yo Bro!</p>
-      <p class="description">
-        Yo Bro — это самое быстрое и лаконичное приложение для общения! Всего одно нажатие — и твои друзья получают
-        дружеское "Bro". Без лишних слов, без сложных интерфейсов, только мгновенная связь и фановый вайб.
-      </p>
+      <div class="description-wrapper">
+        <h1 class="title">Yo Bro</h1>
+        <p class="subtitle">Простой способ сказать Yo Bro!</p>
+        <p class="description">
+          Yo Bro — это самое быстрое и лаконичное приложение для общения! Всего одно нажатие — и твои друзья получают
+          дружеское "Bro". Без лишних слов, без сложных интерфейсов, только мгновенная связь и фановый вайб.
+        </p>
 
-      <p class="description">Присоединяйся и начни общаться проще, чем когда-либо! 🚀</p>
-    </div>
-    <!-- <q-btn label="Профиль" @click="goToProfile" />
+        <p class="description">Присоединяйся и начни общаться проще, чем когда-либо! 🚀</p>
+      </div>
+      <!-- <q-btn label="Профиль" @click="goToProfile" />
     <q-btn label="Друзья" @click="goToFriendsList" />
     <q-btn label="Уведомления" @click="goToNotification" /> -->
+    </div>
   </q-page>
 </template>
 
@@ -61,6 +63,15 @@ const logOut = async () => {
   color: #fff;
   position: relative;
   height: 100vh;
+}
+
+.layout {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  top: 0;
+  left: 0;
+  background: rgba(0, 0, 0, 0.5);
 }
 
 .bg-img {

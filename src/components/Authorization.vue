@@ -59,11 +59,10 @@ const signIn = async () => {
 
       <q-separator />
 
-      <q-tab-panels v-model="tab" animated>
+      <q-tab-panels class="content" v-model="tab" animated>
         <q-tab-panel name="mails">
           <div class="text-h6">Войти в аккаунт</div>
-          Lorem ipsum dolor sit amet consectetur adipisicing elit.
-          <q-input outlined v-model="loginForm.email" label="Email" />
+          <q-input class="input" outlined v-model="loginForm.email" label="Email" />
           <q-input type="password" outlined v-model="loginForm.password" label="Пароль" />
           <q-btn label="Войти" color="primary" @click="signIn()" class="q-mt-md" />
 
@@ -72,7 +71,6 @@ const signIn = async () => {
 
         <q-tab-panel name="alarms">
           <div class="text-h6">Регистрация</div>
-          Lorem ipsum dolor sit amet consectetur adipisicing elit.
           <q-input outlined v-model="registerForm.email" label="Email" />
           <q-input type="password" outlined v-model="registerForm.password" label="Пароль" />
           <q-btn label="Регистрация" color="primary" @click="signUp()" class="q-mt-md" />
@@ -84,3 +82,80 @@ const signIn = async () => {
     </q-card>
   </div>
 </template>
+
+<style scoped>
+.q-page {
+  background: linear-gradient(135deg, #667eea, #764ba2);
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  color: white;
+}
+
+.q-card {
+  width: 100%;
+  max-width: 700px;
+  padding: 20px;
+  border-radius: 12px;
+  background: #c4cdff;
+  box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.3);
+}
+
+.q-tab-panel {
+  background: #c4cdff;
+}
+
+/* Заголовки */
+.text-h6 {
+  font-size: 1.5rem;
+  font-weight: 600;
+  margin-bottom: 10px;
+  text-align: center;
+  color: black;
+}
+
+/* Вход и регистрация */
+.q-input {
+  background: rgba(255, 255, 255, 0.3);
+  border-radius: 8px;
+  /* color: white; */
+  width: 400px;
+  margin: 0 0 20px 0;
+}
+
+.q-input:last-of-type {
+  margin: 0;
+}
+
+.q-input input {
+  color: black;
+}
+
+/* Кнопки */
+.q-btn {
+  width: 100%;
+  padding: 10px;
+  border-radius: 8px;
+  font-size: 1rem;
+  transition: all 0.3s;
+}
+
+.q-btn:hover {
+  opacity: 0.8;
+}
+
+/* Стили для вкладок */
+.q-tabs {
+  background: transparent;
+}
+
+.q-tab {
+  color: white;
+  font-weight: bold;
+}
+
+.q-separator {
+  background: rgba(255, 255, 255, 0.3);
+}
+</style>
