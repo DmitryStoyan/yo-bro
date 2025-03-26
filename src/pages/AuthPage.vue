@@ -5,7 +5,6 @@ defineOptions({
 });
 
 import Authorization from '../components/Authorization.vue'
-import checkAuth from 'src/components/checkAuth.vue';
 
 </script>
 

@@ -20,9 +20,9 @@
 
         <p class="description">Присоединяйся и начни общаться проще, чем когда-либо! 🚀</p>
       </div>
-      <!-- <q-btn label="Профиль" @click="goToProfile" />
-    <q-btn label="Друзья" @click="goToFriendsList" />
-    <q-btn label="Уведомления" @click="goToNotification" /> -->
+      <q-btn label="Профиль" @click="goToProfile" />
+      <q-btn label="Друзья" @click="goToFriendsList" />
+      <q-btn label="Уведомления" @click="goToNotification" />
     </div>
   </q-page>
 </template>

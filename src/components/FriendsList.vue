@@ -14,10 +14,6 @@ const loadFriends = async () => {
   friendsList.value = await userStore.getFriends();
 };
 
-const loadAllUser = async () => {
-  await userStore.getAllUsers();
-};
-
 const checkRequest = async (receiverId) => {
   if (!userStore.userId) return false;
 
@@ -82,11 +78,10 @@ onMounted(() => {
 </script>
 
 <template>
-  <div>
-    <h2>Список всех пользователей</h2>
-    <q-input outlined v-model="searchQuery" label="Поиск пользователей" />
+  <div class="container">
+    <h2 class="title">Друзья</h2>
+    <q-input outlined v-model="searchQuery" label="Введите имя друга" />
     <q-btn label="Поиск" color="primary" @click="loadUsers(searchQuery)" class="q-mt-md" />
-    <q-btn label="Вывести всех пользователей" color="primary" @click="loadAllUser" class="q-mt-md" />
 
     <p v-if="searchResults.length === 0">Пользователи не найдены</p>
 
@@ -106,3 +101,72 @@ onMounted(() => {
     </ul>
   </div>
 </template>
+
+<style scoped>
+.container {
+  width: 95%;
+  max-width: 1920px;
+  margin: 0 auto;
+  padding: 20px;
+  background: #ffffff;
+  border-radius: 12px;
+}
+
+.title {
+  text-align: center;
+  color: #333;
+  font-size: 24px;
+  margin-bottom: 20px;
+  margin: 0 0 0 30px;
+}
+
+
+
+.q-input {
+  width: 100%;
+  margin-bottom: 12px;
+}
+
+.q-btn {
+  font-size: 14px;
+  padding: 10px 20px;
+  border-radius: 8px;
+  transition: all 0.3s ease-in-out;
+  margin: 0 0 30px 0;
+}
+
+.q-btn:hover {
+  transform: scale(1.05);
+}
+
+ul {
+  list-style: none;
+  padding: 0;
+  margin: 20px 0;
+}
+
+li {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 15px;
+  background: #f5f5f5;
+  border-radius: 8px;
+  margin-bottom: 10px;
+  transition: background 0.3s;
+}
+
+li:hover {
+  background: #e0e0e0;
+}
+
+.q-btn[icon="add"] {
+  background: #4caf50;
+  color: white;
+}
+
+.q-btn[icon="delete"] {
+  background: #f44336;
+  color: white;
+}
+</style>
