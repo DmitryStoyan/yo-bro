@@ -30,17 +30,110 @@ watchEffect(() => {
 </script>
 
 <template>
-  <div>
-    <h2>Уведомления</h2>
-    <p v-if="userStore.incomingRequests.length == 0">Нет уведомлений</p>
-    <ul v-else>
-      <li v-for="request in userStore.incomingRequests" :key="request.id">
-        {{ request.fromUserName }}
-        <q-btn round color="green" icon="add" @click="acceptFriendRequest(request.id)" />
-        <q-btn round color="red" icon="cancel" @click="deleteRequest(request.id)" />
+  <div class="notifications-container">
+    <h2 class="title">Уведомления</h2>
+    <p v-if="userStore.incomingRequests.length == 0" class="no-notifications">Нет уведомлений</p>
+    <ul v-else class="notifications-list">
+      <li v-for="request in userStore.incomingRequests" :key="request.id" class="notification-item">
+        <span class="request-from">{{ request.fromUserName }}</span>
+        <div class="actions">
+          <q-btn round color="green" icon="add" @click="acceptFriendRequest(request.id)"
+            class="action-btn accept-btn" />
+          <q-btn round color="red" icon="cancel" @click="deleteRequest(request.id)" class="action-btn decline-btn" />
+        </div>
       </li>
     </ul>
   </div>
 </template>
 
-<style scoped></style>
+<style scoped>
+.notifications-container {
+  width: 95%;
+  max-width: 1920px;
+  margin: 0 auto;
+  padding: 20px;
+  border-radius: 8px;
+  position: relative;
+  min-height: 100vh;
+}
+
+.title {
+  text-align: center;
+  color: #333;
+  font-size: 24px;
+
+}
+
+.no-notifications {
+  text-align: center;
+  color: #888;
+  font-style: italic;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+
+.notifications-list {
+  list-style: none;
+  padding: 0;
+}
+
+.notification-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px;
+  margin: 8px 0;
+  background-color: #fff;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+  transition: transform 0.2s ease;
+}
+
+.notification-item:hover {
+  transform: translateY(-5px);
+}
+
+.request-from {
+  font-weight: bold;
+  color: #333;
+}
+
+.actions {
+  display: flex;
+  gap: 8px;
+}
+
+.action-btn {
+  transition: background-color 0.3s, transform 0.2s;
+}
+
+.accept-btn {
+  background-color: #4CAF50;
+}
+
+.decline-btn {
+  background-color: #F44336;
+}
+
+.accept-btn:hover {
+  background-color: #45a049;
+  transform: scale(1.1);
+}
+
+.decline-btn:hover {
+  background-color: #e53935;
+  transform: scale(1.1);
+}
+
+.action-btn:focus {
+  outline: none;
+  box-shadow: 0 0 0 2px rgba(76, 175, 80, 0.5);
+}
+
+.decline-btn:focus {
+  outline: none;
+  box-shadow: 0 0 0 2px rgba(244, 67, 54, 0.5);
+}
+</style>
