@@ -81,7 +81,7 @@ onMounted(() => {
   <div class="container">
     <h2 class="title">Друзья</h2>
     <q-input outlined v-model="searchQuery" label="Введите имя друга" />
-    <q-btn label="Поиск" color="primary" @click="loadUsers(searchQuery)" class="q-mt-md" />
+    <q-btn label="Поиск" color="primary" @click="loadUsers(searchQuery)" class="q-mt-md search-btn" />
 
     <p v-if="searchResults.length === 0">Пользователи не найдены</p>
 
@@ -132,7 +132,6 @@ onMounted(() => {
   padding: 10px 20px;
   border-radius: 8px;
   transition: all 0.3s ease-in-out;
-  margin: 0 0 30px 0;
 }
 
 .q-btn:hover {
@@ -158,6 +157,10 @@ li {
 
 li:hover {
   background: #e0e0e0;
+}
+
+.search-btn {
+  margin: 0 0 30px 0;
 }
 
 .q-btn[icon="add"] {
