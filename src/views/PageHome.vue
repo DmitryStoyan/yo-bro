@@ -5,27 +5,27 @@ import { useUserStore } from 'src/stores/userStore';
 const userStore = useUserStore();
 
 const router = useRouter()
-const goToAuth = () => {
-  router.push('/auth')
-}
-const goToProfile = () => {
-  router.push('/profile')
-}
+// const goToAuth = () => {
+//   router.push('/auth')
+// }
+// const goToProfile = () => {
+//   router.push('/profile')
+// }
 
-const goToFriendsList = () => {
-  router.push('/friendsList')
-}
+// const goToFriendsList = () => {
+//   router.push('/friendsList')
+// }
 
-const goToNotification = () => {
-  router.push('/notification')
-}
+// const goToNotification = () => {
+//   router.push('/notification')
+// }
 
 
 
-const logOut = async () => {
-  await userStore.logOut()
-  router.push('/auth')
-}
+// const logOut = async () => {
+//   await userStore.logOut()
+//   router.push('/auth')
+// }
 </script>
 
 <template>
@@ -34,11 +34,11 @@ const logOut = async () => {
 
       <q-img class="bg-img" src="../assets/background/homeBG.gif" />
 
-      <header class="header">
+      <!-- <header class="header">
         <img class="logo" src="../assets/logo/logo.jpg" alt="Yo">
         <q-btn class="auth-btn" label="Регистрация/Вход" @click="goToAuth" v-if="!userStore.userId" />
         <q-btn class="auth-btn" label="Выход" @click="logOut" v-else />
-      </header>
+      </header> -->
 
       <div class="description-wrapper">
         <h1 class="title">Yo Bro</h1>
@@ -50,9 +50,9 @@ const logOut = async () => {
 
         <p class="description">Присоединяйся и начни общаться проще, чем когда-либо! 🚀</p>
       </div>
-      <q-btn label="Профиль" @click="goToProfile" />
+      <!-- <q-btn label="Профиль" @click="goToProfile" />
       <q-btn label="Друзья" @click="goToFriendsList" />
-      <q-btn label="Уведомления" @click="goToNotification" />
+      <q-btn label="Уведомления" @click="goToNotification" /> -->
     </div>
   </q-page>
 </template>
