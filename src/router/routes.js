@@ -15,14 +15,14 @@ const checkAuth = (to, from, next) => {
     unsubscribe();
 
     if (user) {
-      if (to.path === "/auth") {
-        next("/");
+      if (to.path === "/auth" || to.path === "/") {
+        next("/friendsList");
       } else {
         next();
       }
     } else {
-      if (to.path !== "/auth") {
-        next("/auth");
+      if (to.path !== "/" && to.path !== "/auth") {
+        next("/");
       } else {
         next();
       }
