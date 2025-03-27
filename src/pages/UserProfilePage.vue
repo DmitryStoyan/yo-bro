@@ -43,7 +43,7 @@ const updateProfile = async () => {
   align-items: center;
   justify-content: center; */
   min-height: 100vh;
-  background: #f4f4f9;
+  background: #ffffff;
   padding: 20px;
 }
 

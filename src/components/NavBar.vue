@@ -41,6 +41,11 @@ const logOut = async () => {
 <style scoped>
 .navbar {
   background: black;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  z-index: 10;
   padding: 10px 20px;
   display: flex;
   align-items: center;
@@ -48,9 +53,9 @@ const logOut = async () => {
 }
 
 .navbar-container {
+  width: 100%;
   display: flex;
   align-items: center;
-  width: 100%;
   justify-content: space-between;
 }
 
