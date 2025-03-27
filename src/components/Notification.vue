@@ -61,7 +61,6 @@ watchEffect(() => {
   text-align: center;
   color: #333;
   font-size: 24px;
-
 }
 
 .no-notifications {

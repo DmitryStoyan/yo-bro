@@ -97,6 +97,7 @@ onMounted(() => {
     <ul v-else>
       <li v-for="friend in friendsList" :key="friend">
         {{ friend }}
+        <q-btn color="primary" icon="handshake" label="Yo Bro" />
       </li>
     </ul>
   </div>
@@ -117,8 +118,6 @@ onMounted(() => {
   color: #333;
   font-size: 24px;
 }
-
-
 
 .q-input {
   width: 100%;

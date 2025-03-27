@@ -22,8 +22,8 @@ const updateProfile = async () => {
 
 <template>
   <q-page>
-    <h2>Мой профиль</h2>
-    <div>
+    <h2 class="title">Мой профиль</h2>
+    <div class="content">
       <q-img :src="url" class="profile-avatar">
         <template v-slot:loading>
           <q-spinner-gears color="white"></q-spinner-gears>
@@ -33,14 +33,64 @@ const updateProfile = async () => {
       <q-input class="q-mb-md" outlined label="Имя пользователя" v-model="userStore.userName" />
       <q-btn label="Сохранить" color="blue" @click="updateProfile" />
     </div>
-    <h2> Email: {{ userStore.userEmail }}</h2>
   </q-page>
 </template>
 
 <style scoped>
+.q-page {
+  /* display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center; */
+  min-height: 100vh;
+  background: #f4f4f9;
+  padding: 20px;
+}
+
+.content {
+  max-width: 1920px;
+  width: 95%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.title {
+  text-align: center;
+  color: #333;
+  font-size: 24px;
+}
+
 .profile-avatar {
-  width: 150px;
-  height: 150px;
+  width: 120px;
+  height: 120px;
   border-radius: 50%;
+  overflow: hidden;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+  margin-bottom: 35px;
+}
+
+.q-input {
+  width: 100%;
+}
+
+.q-btn {
+  width: 100%;
+  max-width: 200px;
+  font-size: 16px;
+  font-weight: bold;
+  padding: 10px;
+  border-radius: 8px;
+  transition: all 0.3s ease;
+  align-self: start;
+}
+
+.q-btn:hover {
+  background-color: #1976d2;
+  transform: scale(1.05);
+}
+
+.q-btn:active {
+  transform: scale(0.98);
 }
 </style>
