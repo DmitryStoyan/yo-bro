@@ -9,14 +9,19 @@ import Loader from './Loader.vue';
 const userStore = useUserStore();
 const db = getFirestore(firebaseApp);
 const isLoadingNotificationList = ref(true)
+const isLoading = ref(false)
 
 const deleteRequest = async (requestId) => {
+  isLoading.value = true
   await userStore.declineFriendRequest(requestId)
   console.log(requestId)
+  isLoading.value = false
 }
 
 const acceptFriendRequest = async (requestId) => {
+  isLoading.value = true
   await userStore.acceptFriendRequest(requestId);
+  isLoading.value = false
 }
 
 onMounted(() => {
@@ -41,11 +46,12 @@ watchEffect(() => {
     <ul v-else class="notifications-list">
       <li v-for="request in userStore.incomingRequests" :key="request.id" class="notification-item">
         <span class="request-from">{{ request.fromUserName }}</span>
-        <div class="actions">
+        <div class="actions" v-if="!isLoading">
           <q-btn round color="green" icon="add" @click="acceptFriendRequest(request.id)"
             class="action-btn accept-btn" />
           <q-btn round color="red" icon="cancel" @click="deleteRequest(request.id)" class="action-btn decline-btn" />
         </div>
+        <Loader v-else />
       </li>
     </ul>
   </div>
