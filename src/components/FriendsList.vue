@@ -12,6 +12,7 @@ const searchResults = ref([]);
 const friendsList = ref([]);
 const isLoadingFriends = ref(false)
 const isLoadingSearch = ref(false);
+const isLoading = ref(false)
 
 const loadFriends = async () => {
   isLoadingFriends.value = true
@@ -55,23 +56,26 @@ const loadUsers = async (query) => {
   await updateRequestStatus();
   searchResults.value = userStore.searchResults
   isLoadingSearch.value = false;
-
 }
 
 const sendRequest = async (userId, userName) => {
+  isLoading.value = true
   await userStore.sendFriendRequest(userId, userName)
   const user = searchResults.value.find(u => u.id === userId)
   if (user) {
     user.requestPending = true
   }
+  isLoading.value = false
 }
 
 const cancelRequest = async (userId) => {
+  isLoading.value = true
   await userStore.cancelFriendRequest(userId)
   const user = searchResults.value.find(u => u.id === userId)
   if (user) {
     user.requestPending = false
   }
+  isLoading.value = false
 }
 
 watchEffect(() => {
@@ -102,8 +106,13 @@ onMounted(() => {
     <ul v-else>
       <li v-for="user in searchResults" :key="user.id">
         {{ user.userName }}
-        <q-btn v-if="user.requestPending" round color="red" icon="delete" @click="cancelRequest(user.id)" />
-        <q-btn v-else round color="green" icon="add" @click="sendRequest(user.id, user.userName)" />
+
+        <q-btn v-if="user.requestPending && !isLoading" round color="red" icon="delete"
+          @click="cancelRequest(user.id)" />
+        <q-btn v-else-if="!user.requestPending && !isLoading" round color="green" icon="add"
+          @click="sendRequest(user.id, user.userName)" />
+        <Loader v-else />
+
       </li>
     </ul>
 
