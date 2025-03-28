@@ -80,8 +80,14 @@ onMounted(() => {
 <template>
   <div class="container">
     <h2 class="title">Друзья</h2>
-    <q-input outlined v-model="searchQuery" label="Введите имя друга" />
-    <q-btn label="Поиск" color="primary" @click="loadUsers(searchQuery)" class="q-mt-md search-btn" />
+
+
+
+    <q-form @submit.prevent="loadUsers(searchQuery)">
+      <q-input outlined v-model="searchQuery" label="Введите имя друга" />
+      <q-btn :disabled="searchQuery.length === 0" type="submit" label="Поиск" color="primary"
+        class="q-mt-md search-btn" />
+    </q-form>
 
     <p v-if="searchResults.length === 0">Пользователи не найдены</p>
 
@@ -117,11 +123,12 @@ onMounted(() => {
   text-align: center;
   color: #333;
   font-size: 24px;
+  margin: 0 0 30px 0;
 }
 
 .q-input {
   width: 100%;
-  margin-bottom: 12px;
+  margin: 0 0 12px 0;
 }
 
 .q-btn {
