@@ -4,6 +4,7 @@ import { getAuth } from 'firebase/auth';
 import { getFirestore } from 'firebase/firestore'
 import { useUserStore } from '@/stores/userStore';
 import { v4 as uuidv4 } from 'uuid';
+import Loader from 'src/components/Loader.vue';
 
 const db = getFirestore()
 const userStore = useUserStore()
@@ -31,7 +32,8 @@ const updateProfile = async () => {
       </q-img>
       <q-input class="q-mb-md" outlined label="Email" v-model="userStore.userEmail" readonly />
       <q-input class="q-mb-md" outlined label="Имя пользователя" v-model="userStore.userName" />
-      <q-btn label="Сохранить" color="blue" @click="updateProfile" />
+      <Loader class="loader" v-if="isLoading" />
+      <q-btn v-else label="Сохранить" color="blue" @click="updateProfile" />
     </div>
   </q-page>
 </template>
@@ -82,7 +84,6 @@ const updateProfile = async () => {
   padding: 10px;
   border-radius: 8px;
   transition: all 0.3s ease;
-  align-self: start;
 }
 
 .q-btn:hover {
