@@ -4,6 +4,7 @@ import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword } f
 import { useUserStore } from '@/stores/userStore';
 import { ref } from 'vue';
 import { useRouter } from 'vue-router';
+import Loader from './Loader.vue';
 
 const router = useRouter()
 const auth = getAuth(app);
@@ -50,6 +51,7 @@ const signIn = async () => {
 
 <template>
   <div>
+
     <q-card>
       <q-tabs v-model="tab" dense class="text-grey" active-color="primary" indicator-color="primary" align="justify"
         narrow-indicator>
@@ -64,8 +66,8 @@ const signIn = async () => {
           <div class="text-h6">Войти в аккаунт</div>
           <q-input class="input" outlined v-model="loginForm.email" label="Email" />
           <q-input type="password" outlined v-model="loginForm.password" label="Пароль" />
-          <q-btn label="Войти" color="primary" @click="signIn()" class="q-mt-md" />
-
+          <loader v-if="isLoading" />
+          <q-btn v-else label="Войти" color="primary" @click="signIn()" class="q-mt-md" />
 
         </q-tab-panel>
 
@@ -73,13 +75,13 @@ const signIn = async () => {
           <div class="text-h6">Регистрация</div>
           <q-input outlined v-model="registerForm.email" label="Email" />
           <q-input type="password" outlined v-model="registerForm.password" label="Пароль" />
-          <q-btn label="Регистрация" color="primary" @click="signUp()" class="q-mt-md" />
-
-
+          <loader v-if="isLoading" />
+          <q-btn v-else label="Регистрация" color="primary" @click="signUp()" class="q-mt-md" />
         </q-tab-panel>
 
       </q-tab-panels>
     </q-card>
+
   </div>
 </template>
 

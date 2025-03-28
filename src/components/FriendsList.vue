@@ -3,15 +3,20 @@ import { ref, watchEffect, onMounted } from "vue";
 import { useUserStore } from "src/stores/userStore";
 import { getFirestore, doc, getDoc } from "firebase/firestore";
 import firebaseApp from "src/utils/firebase";
+import Loader from "./Loader.vue";
 
 const db = getFirestore(firebaseApp);
 const userStore = useUserStore();
 const searchQuery = ref('')
 const searchResults = ref([]);
 const friendsList = ref([]);
+const isLoadingFriends = ref(false)
+const isLoadingSearch = ref(false);
 
 const loadFriends = async () => {
+  isLoadingFriends.value = true
   friendsList.value = await userStore.getFriends();
+  isLoadingFriends.value = false
 };
 
 const checkRequest = async (receiverId) => {
@@ -45,9 +50,12 @@ const updateRequestStatus = async () => {
 }
 
 const loadUsers = async (query) => {
+  isLoadingSearch.value = true;
   await userStore.searchUsers(query);
   await updateRequestStatus();
   searchResults.value = userStore.searchResults
+  isLoadingSearch.value = false;
+
 }
 
 const sendRequest = async (userId, userName) => {
@@ -99,6 +107,7 @@ onMounted(() => {
       </li>
     </ul>
 
+    <Loader v-if="isLoadingFriends" />
     <p v-if="friendsList.length === 0">У вас нет добавленных друзей</p>
     <ul v-else>
       <li v-for="friend in friendsList" :key="friend">

@@ -3,10 +3,12 @@ import { ref, onMounted, watchEffect } from 'vue';
 import { useUserStore } from 'src/stores/userStore';
 import { getFirestore, doc, getDoc, query, where, collection } from 'firebase/firestore';
 import firebaseApp from "src/utils/firebase";
+import Loader from './Loader.vue';
 
 
 const userStore = useUserStore();
 const db = getFirestore(firebaseApp);
+const isLoadingNotificationList = ref(true)
 
 const deleteRequest = async (requestId) => {
   await userStore.declineFriendRequest(requestId)
@@ -19,11 +21,14 @@ const acceptFriendRequest = async (requestId) => {
 
 onMounted(() => {
   userStore.getFriendRequests()
+  isLoadingNotificationList.value = false
 })
 
 watchEffect(() => {
   if (userStore.userId) {
+    isLoadingNotificationList.value = true
     userStore.getFriendRequests();
+    isLoadingNotificationList.value = false
   }
 });
 
