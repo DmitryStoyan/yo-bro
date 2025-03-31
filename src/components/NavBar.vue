@@ -28,6 +28,7 @@ const logOut = async () => {
   <q-header class="navbar">
     <div class="navbar-container">
       <img class="logo" src="@/assets/logo/logo.jpg" alt="Yo" @click="navigateTo('/')">
+
       <div v-if="isAuthenticated" class="nav-links">
         <q-btn v-for="link in navigationLinks" :key="link.path" :label="link.label" @click="navigateTo(link.path)"
           class="nav-button" />

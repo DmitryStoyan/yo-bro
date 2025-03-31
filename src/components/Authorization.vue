@@ -11,6 +11,7 @@ const auth = getAuth(app);
 
 const tab = ref('mails')
 const isLoading = ref(false)
+const errorMesaage = ref('')
 
 const loginForm = ref({
   email: '',
@@ -23,11 +24,13 @@ const registerForm = ref({
 })
 
 const signUp = async () => {
-  isLoading.value = true
+  isLoading.value = true;
+  errorMesaage.value = '';
   try {
     await createUserWithEmailAndPassword(auth, registerForm.value.email, registerForm.value.password)
     console.log('Регистрация выполнена')
   } catch (error) {
+    errorMesaage.value = getErrorMessage(error.code)
     console.log(error.message)
   } finally {
     isLoading.value = false
@@ -35,16 +38,32 @@ const signUp = async () => {
 }
 
 const signIn = async () => {
-  isLoading.value = true
+  isLoading.value = true;
+  errorMesaage.value = ''
   try {
     await signInWithEmailAndPassword(auth, loginForm.value.email, loginForm.value.password)
     router.push('/')
     console.log('Вход выполнен')
   } catch (error) {
+    errorMesaage.value = getErrorMessage(error.code)
     console.log(error.message)
   } finally {
     isLoading.value = false
   }
+}
+
+const getErrorMessage = (errorCode) => {
+  const errors = {
+    'auth/invalid-email': 'Неверный формат email',
+    'auth/user-disabled': 'Пользователь заблокирован',
+    'auth/user-not-found': 'Пользователь не найден',
+    'auth/wrong-password': 'Неверный пароль',
+    'auth/invalid-credential': 'Неверный логин или пароль',
+    'auth/email-already-in-use': 'Email уже используется',
+    'auth/weak-password': 'Пароль слишком слабый'
+  }
+
+  return errors[errorCode] || 'Произошла ошибка, попробуйте снова';
 }
 
 </script>
@@ -66,6 +85,9 @@ const signIn = async () => {
           <div class="text-h6">Войти в аккаунт</div>
           <q-input class="input" outlined v-model="loginForm.email" label="Email" />
           <q-input type="password" outlined v-model="loginForm.password" label="Пароль" />
+
+          <div v-if="errorMesaage" class="error-message">{{ errorMesaage }}</div>
+
           <loader v-if="isLoading" />
           <q-btn v-else label="Войти" color="primary" @click="signIn()" class="q-mt-md" />
 
@@ -75,6 +97,9 @@ const signIn = async () => {
           <div class="text-h6">Регистрация</div>
           <q-input outlined v-model="registerForm.email" label="Email" />
           <q-input type="password" outlined v-model="registerForm.password" label="Пароль" />
+
+          <div v-if="errorMesaage" class="error-message">{{ errorMesaage }}</div>
+
           <loader v-if="isLoading" />
           <q-btn v-else label="Регистрация" color="primary" @click="signUp()" class="q-mt-md" />
         </q-tab-panel>
@@ -108,7 +133,6 @@ const signIn = async () => {
   background: #c4cdff;
 }
 
-/* Заголовки */
 .text-h6 {
   font-size: 1.5rem;
   font-weight: 600;
@@ -117,11 +141,9 @@ const signIn = async () => {
   color: black;
 }
 
-/* Вход и регистрация */
 .q-input {
   background: rgba(255, 255, 255, 0.3);
   border-radius: 8px;
-  /* color: white; */
   width: 400px;
   margin: 0 0 20px 0;
 }
@@ -134,7 +156,6 @@ const signIn = async () => {
   color: black;
 }
 
-/* Кнопки */
 .q-btn {
   width: 100%;
   padding: 10px;
@@ -147,7 +168,6 @@ const signIn = async () => {
   opacity: 0.8;
 }
 
-/* Стили для вкладок */
 .q-tabs {
   background: transparent;
 }
@@ -159,5 +179,12 @@ const signIn = async () => {
 
 .q-separator {
   background: rgba(255, 255, 255, 0.3);
+}
+
+.error-message {
+  color: red;
+  text-align: center;
+  margin-top: 10px;
+  font-size: 0.9rem;
 }
 </style>
