@@ -10,6 +10,7 @@ const userStore = useUserStore();
 const searchQuery = ref('')
 const searchResults = ref([]);
 const friendsList = ref([]);
+const isSearchPerformed = ref(false)
 const isLoadingFriends = ref(false)
 const isLoadingSearch = ref(false);
 const isLoading = ref(false)
@@ -56,6 +57,7 @@ const loadUsers = async (query) => {
   await updateRequestStatus();
   searchResults.value = userStore.searchResults
   isLoadingSearch.value = false;
+  isSearchPerformed.value = true;
 }
 
 const sendRequest = async (userId, userName) => {
@@ -101,7 +103,7 @@ onMounted(() => {
         class="q-mt-md search-btn" />
     </q-form>
 
-    <p v-if="searchResults.length === 0">Пользователи не найдены</p>
+    <p v-if="isSearchPerformed && searchResults.length === 0">Пользователи не найдены</p>
 
     <ul v-else>
       <li v-for="user in searchResults" :key="user.id">
