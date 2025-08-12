@@ -1,0 +1,32 @@
+{
+  "name": "yo-bro",
+  "version": "0.0.1",
+  "description": "A Quasar Project",
+  "productName": "yo-bro",
+  "author": "DmitryStoyan <jombee@yandex.ru>",
+  "private": true,
+  "scripts": {
+    "test": "echo \"No test specified\" && exit 0",
+    "dev": "quasar dev",
+    "build": "quasar build"
+  },
+  "dependencies": {
+    "@quasar/extras": "^1.16.4",
+    "firebase": "^11.1.0",
+    "pinia": "^2.3.0",
+    "quasar": "^2.16.0",
+    "uuid": "^11.0.5",
+    "vue": "^3.4.18",
+    "vue-router": "^4.5.0"
+  },
+  "devDependencies": {
+    "@quasar/app-vite": "^1.9.0",
+    "autoprefixer": "^10.4.2",
+    "postcss": "^8.4.14"
+  },
+  "engines": {
+    "node": "^20 || ^18 || ^16",
+    "npm": ">= 6.13.4",
+    "yarn": ">= 1.21.1"
+  }
+}
