@@ -14,7 +14,7 @@ export async function sendYoBro(
 ) {
   const sendYoBroFunction = httpsCallable(functions, "sendYoBro");
   const payload = { toUserId, title, body };
-  console.log("Sending payload:", payload); // 👈 Добавьте лог
+  console.log("Sending payload:", payload);
   try {
     const result = await sendYoBroFunction(payload);
     console.log("Уведомление отправлено:", result.data);

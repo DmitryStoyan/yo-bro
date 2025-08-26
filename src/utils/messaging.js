@@ -1,52 +1,71 @@
-// src/utils/messaging.js
-
-import { getMessaging, getToken, onMessage } from "firebase/messaging";
-import { getFirestore, doc, updateDoc, arrayUnion } from "firebase/firestore";
+import {
+  getMessaging,
+  getToken,
+  onMessage,
+  deleteToken,
+} from "firebase/messaging";
+import {
+  getFirestore,
+  doc,
+  updateDoc,
+  arrayUnion,
+  arrayRemove,
+} from "firebase/firestore";
 import firebaseApp from "./firebase";
 
-// ⚠️ Вставьте сюда ваш публичный VAPID ключ (из Firebase Console)
 const VAPID_KEY =
-  "BDYkhdsevukfsrIPM5iT0zPZp0aULZHFm7kzZsfnqtBYkeQoudMAGNDsNPlNj4kHcufJ2R9xlKt-lS1IzIOkxck"; // пример: 'BHYZpBcY9udE_3R1...'
+  "BDYkhdsevukfsrIPM5iT0zPZp0aULZHFm7kzZsfnqtBYkeQoudMAGNDsNPlNj4kHcufJ2R9xlKt-lS1IzIOkxck";
 
 const messaging = getMessaging(firebaseApp);
 const db = getFirestore(firebaseApp);
 
 /**
- * Запрашивает разрешение у пользователя и сохраняет FCM токен в Firestore.
- * @param {string} userId - ID текущего пользователя
+ * Сохраняет FCM токен в Firestore (в массив fcmTokens).
+ */
+async function saveFCMToken(userId, token) {
+  const userRef = doc(db, "users", userId, "ProfileInfo", "main");
+  await updateDoc(userRef, {
+    fcmTokens: arrayUnion(token),
+  });
+  console.log("✅ Токен сохранён в Firestore:", token);
+}
+
+/**
+ * Удаляет FCM токен из Firestore (если сервер сказал, что он устарел).
+ */
+export async function removeFCMToken(userId, token) {
+  const userRef = doc(db, "users", userId, "ProfileInfo", "main");
+  await updateDoc(userRef, {
+    fcmTokens: arrayRemove(token),
+  });
+  console.log("🗑️ Удалён невалидный токен:", token);
+}
+
+/**
+ * Запрашивает разрешение у пользователя и регистрирует актуальный FCM токен.
  */
 export async function requestFCMPermission(userId) {
   try {
     const permission = await Notification.requestPermission();
-
     if (permission !== "granted") {
-      console.warn("Разрешение на уведомления не предоставлено");
+      console.warn("❌ Разрешение на уведомления не предоставлено");
       return;
     }
 
-    const token = await getToken(messaging, {
-      vapidKey: VAPID_KEY,
-    });
-
+    const token = await getToken(messaging, { vapidKey: VAPID_KEY });
     if (token) {
       console.log("FCM токен:", token);
-
-      // Сохраняем токен в Firestore
-      const userRef = doc(db, "users", userId, "ProfileInfo", "main");
-      await updateDoc(userRef, { fcmToken: token });
-
-      console.log("Токен успешно сохранён в Firestore");
+      await saveFCMToken(userId, token);
     } else {
-      console.warn("Не удалось получить FCM токен");
+      console.warn("⚠️ Не удалось получить FCM токен");
     }
   } catch (error) {
-    console.error("Ошибка при получении разрешения или токена:", error);
+    console.error("Ошибка при получении токена:", error);
   }
 }
 
 /**
- * Подписывается на входящие уведомления в foreground режиме
- * @param {Function} callback - Функция, вызываемая при получении уведомления
+ * Подписывается на входящие уведомления в foreground
  */
 export function listenFCMMessages(callback) {
   onMessage(messaging, (payload) => {

@@ -1,9 +1,7 @@
-// src/utils/firebase.js
-
 import { initializeApp } from "firebase/app";
 import { getFirestore } from "firebase/firestore";
 import { getAuth } from "firebase/auth";
-import { getFunctions, httpsCallable } from "firebase/functions"; // 👈 добавляем
+import { getFunctions, httpsCallable } from "firebase/functions";
 
 const firebaseConfig = {
   apiKey: "AIzaSyA4GvD95cepNp3WDqpnSmUIx_vspSAma-8",
@@ -18,7 +16,7 @@ const app = initializeApp(firebaseConfig);
 
 const db = getFirestore(app);
 const auth = getAuth(app);
-const functions = getFunctions(app); // 👈 экспортируем
+const functions = getFunctions(app);
 
 export { db, auth, functions, httpsCallable };
 export default app;
