@@ -266,17 +266,26 @@ export const useUserStore = defineStore("user", () => {
     if (user) {
       userId.value = user.uid;
       userEmail.value = user.email;
-
       await fetchUserProfile();
-
-      // 🔔 Запрашиваем разрешение и сохраняем токен
-      await requestFCMPermission(user.uid);
     } else {
       userId.value = null;
       userEmail.value = null;
       userName.value = "";
     }
   });
+
+  const saveFCMToken = async (uid, token) => {
+    if (!uid || !token) return;
+    try {
+      const userRef = doc(db, `users/${uid}/ProfileInfo`, "main");
+      await updateDoc(userRef, {
+        fcmToken: token,
+      });
+      console.log("FCM-токен сохранён в Firestore:", token);
+    } catch (error) {
+      console.error("Ошибка при сохранении FCM-токена:", error);
+    }
+  };
 
   return {
     userId,
@@ -295,5 +304,6 @@ export const useUserStore = defineStore("user", () => {
     declineFriendRequest,
     acceptFriendRequest,
     getFriends,
+    saveFCMToken,
   };
 });

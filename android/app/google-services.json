@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "783564485342",
+    "project_id": "yo-bro-1d8af",
+    "storage_bucket": "yo-bro-1d8af.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:783564485342:android:6c667cb6233ce47dd6884f",
+        "android_client_info": {
+          "package_name": "com.yobro.app"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyB_iO06cfaEgkYcziRd4x93HkvufHj1E-A"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

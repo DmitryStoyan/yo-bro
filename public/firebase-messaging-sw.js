@@ -1,6 +1,3 @@
-// public/firebase-messaging-sw.js
-
-// Импортируем совместимую версию Firebase
 importScripts(
   "https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"
 );
@@ -8,7 +5,6 @@ importScripts(
   "https://www.gstatic.com/firebasejs/9.22.0/firebase-messaging-compat.js"
 );
 
-// Конфиг вашего Firebase проекта (тот же, что и в firebase.js)
 firebase.initializeApp({
   apiKey: "AIzaSyA4GvD95cepNp3WDqpnSmUIx_vspSAma-8",
   authDomain: "yo-bro-1d8af.firebaseapp.com",
@@ -18,20 +14,21 @@ firebase.initializeApp({
   appId: "1:783564485342:web:d8db20218c261876d6884f",
 });
 
-// Получаем объект messaging
 const messaging = firebase.messaging();
 
-// Обработка входящих сообщений в фоновом режиме
+// Обрабатываем фоновые сообщения
 messaging.onBackgroundMessage(function (payload) {
   console.log(
-    "[firebase-messaging-sw.js] Received background message:",
+    "[firebase-messaging-sw.js] Получено фоновое сообщение:",
     payload
   );
 
   const notificationTitle = payload.notification.title;
   const notificationOptions = {
     body: payload.notification.body,
-    icon: "/icons/icon-192x192.png", // можно заменить на свой путь к иконке
+    icon: "/icons/icon-192x192.png",
+    // Указываем канал для Android
+    channelId: "yo-bro-notifications",
   };
 
   // Показываем уведомление

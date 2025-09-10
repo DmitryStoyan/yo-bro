@@ -1,15 +1,27 @@
-import { createApp } from "vue";
-import App from "src/App.vue";
-import { createPinia } from "pinia";
-import router from "./routes";
-import { useUserStore } from "./stores/userStore";
+import { PushNotifications } from "@capacitor/push-notifications";
 
-const app = createApp(App);
+const initPush = async () => {
+  let permStatus = await PushNotifications.checkPermissions();
 
-const pinia = createPinia();
-app.use(pinia);
-app.use(router);
+  if (permStatus.receive !== "granted") {
+    permStatus = await PushNotifications.requestPermissions();
+  }
 
-const userStore = useUserStore();
+  if (permStatus.receive === "granted") {
+    await PushNotifications.register();
+  }
 
-app.mount("#app");
+  PushNotifications.addListener("registration", (token) => {
+    console.log("Push registration success, token: " + token.value);
+  });
+
+  PushNotifications.addListener("registrationError", (err) => {
+    console.error("Push registration error: ", err.error);
+  });
+
+  PushNotifications.addListener("pushNotificationReceived", (notification) => {
+    console.log("Push received: ", notification);
+  });
+};
+
+initPush();

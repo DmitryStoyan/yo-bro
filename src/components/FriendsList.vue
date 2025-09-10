@@ -80,7 +80,6 @@ const sendYoBroToFriend = async (friendId) => {
   }
 };
 
-
 watchEffect(() => {
   searchResults.value = userStore.searchResults;
 });
@@ -122,7 +121,6 @@ onMounted(() => {
           @click="sendYoBroToFriend(friend.id)" />
       </li>
     </ul>
-
   </div>
 </template>
 
