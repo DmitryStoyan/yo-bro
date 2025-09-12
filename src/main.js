@@ -1,36 +1,60 @@
-import { onMounted } from "vue";
-import { createApp } from "vue";
-import App from "./App.vue";
-import router from "./router";
-import { Quasar } from "quasar";
-import quasarUserOptions from "./quasar-user-options";
+import { PushNotifications } from "@capacitor/push-notifications";
+import { useUserStore } from "src/stores/userStore";
 
-import { useUserStore } from "@/stores/userStore";
-import { requestFCMPermission, listenFCMMessages } from "@/utils/messaging";
-
-const app = createApp(App);
-
-app.use(Quasar, quasarUserOptions);
-app.use(router);
-
-app.mount("#app");
-
-// 🚀 Запускаем пуши при входе пользователя
-onMounted(async () => {
+const initPush = async () => {
   const userStore = useUserStore();
 
-  if (userStore.userId) {
-    console.log("🔑 Пользователь найден:", userStore.userId);
+  console.log("🚀 Инициализация push-уведомлений...");
 
-    // Запрашиваем разрешение и сохраняем FCM-токен
-    await requestFCMPermission(userStore.userId);
+  let permStatus = await PushNotifications.checkPermissions();
+  console.log("📋 Текущий статус разрешений:", permStatus);
 
-    // Подписываемся на входящие уведомления
-    listenFCMMessages((notification) => {
-      const { title, body } = notification;
-      alert(`🔔 ${title}: ${body}`);
-    });
-  } else {
-    console.warn("⚠️ Пользователь не авторизован, пуши не активированы");
+  if (permStatus.receive !== "granted") {
+    permStatus = await PushNotifications.requestPermissions();
+    console.log("🔄 Запрос разрешений:", permStatus);
   }
-});
+
+  if (permStatus.receive === "granted") {
+    console.log("✅ Разрешения получены, регистрируем push...");
+    await PushNotifications.register();
+  } else {
+    console.warn("❌ Уведомления не разрешены пользователем");
+    return;
+  }
+
+  // Событие: успешная регистрация
+  PushNotifications.addListener("registration", async (token) => {
+    console.log("🎯 Push registration success, token:", token.value);
+
+    if (userStore.userId) {
+      try {
+        await userStore.saveFCMToken(userStore.userId, token.value);
+        console.log("💾 Токен сохранён в Firestore");
+      } catch (err) {
+        console.error("🔥 Ошибка при сохранении токена в Firestore:", err);
+      }
+    } else {
+      console.warn("⚠️ Пользователь не авторизован, токен не сохранён");
+    }
+  });
+
+  // Событие: ошибка регистрации
+  PushNotifications.addListener("registrationError", (err) => {
+    console.error("🚨 Push registration error:", err.error);
+  });
+
+  // Событие: получение уведомления в активном приложении
+  PushNotifications.addListener("pushNotificationReceived", (notification) => {
+    console.log("🔔 Push получен в активном приложении:", notification);
+  });
+
+  // Событие: взаимодействие с уведомлением (тап)
+  PushNotifications.addListener(
+    "pushNotificationActionPerformed",
+    (notification) => {
+      console.log("👉 Пользователь тапнул по уведомлению:", notification);
+    }
+  );
+};
+
+initPush();

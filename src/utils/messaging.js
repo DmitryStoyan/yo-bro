@@ -1,4 +1,9 @@
-import { PushNotifications } from "@capacitor/push-notifications";
+import {
+  // getMessaging,
+  getToken,
+  onMessage,
+  deleteToken,
+} from "firebase/messaging";
 import {
   getFirestore,
   doc,
@@ -8,69 +13,73 @@ import {
 } from "firebase/firestore";
 import firebaseApp from "./firebase";
 
+const VAPID_KEY =
+  "BDYkhdsevukfsrIPM5iT0zPZp0aULZHFm7kzZsfnqtBYkeQoudMAGNDsNPlNj4kHcufJ2R9xlKt-lS1IzIOkxck";
+
+// const messaging = getMessaging(firebaseApp);
 const db = getFirestore(firebaseApp);
 
 /**
- * Сохраняет FCM-токен в Firestore (в массив fcmTokens).
+ * Сохраняет FCM-токен в Realtime Database.
+ * Токен сохраняется по пути: users/{uid}/fcmTokens/{token} = true
  */
-export async function saveFCMToken(userId, token) {
-  if (!userId || !token) return;
-  try {
-    const userRef = doc(db, "users", userId, "ProfileInfo", "main");
-    await updateDoc(userRef, {
-      fcmTokens: arrayUnion(token),
-    });
-    console.log("✅ Токен сохранён в Firestore:", token);
-  } catch (error) {
-    console.error("❌ Ошибка при сохранении FCM-токена:", error);
-  }
+async function saveFCMToken(userId, token) {
+  const userRef = doc(db, "users", userId, "ProfileInfo", "main");
+  await updateDoc(userRef, {
+    fcmTokens: arrayUnion(token),
+  });
+  console.log("✅ Токен сохранён в Firestore:", token);
 }
 
 /**
- * Удаляет FCM-токен из Firestore (если он недействителен).
+ * Удаляет FCM-токен из Realtime Database.
  */
 export async function removeFCMToken(userId, token) {
-  if (!userId || !token) return;
-  try {
-    const userRef = doc(db, "users", userId, "ProfileInfo", "main");
-    await updateDoc(userRef, {
-      fcmTokens: arrayRemove(token),
-    });
-    console.log("🗑️ Удалён недействительный токен:", token);
-  } catch (error) {
-    console.error("❌ Ошибка при удалении FCM-токена:", error);
-  }
+  const userRef = doc(db, "users", userId, "ProfileInfo", "main");
+  await updateDoc(userRef, {
+    fcmTokens: arrayRemove(token),
+  });
+  console.log("🗑️ Удалён недействительный токен:", token);
 }
 
 /**
- * Запрашивает разрешение на уведомления и регистрирует FCM-токен через Capacitor.
+ * Запрашивает разрешение на уведомления и регистрирует FCM-токен.
  * @param {string} userId - ID пользователя
+ * @param {string} [token] - FCM-токен (опционально, если передан из Capacitor)
  */
-export async function requestFCMPermission(userId) {
+export async function requestFCMPermission(userId, token = null) {
   try {
-    let permStatus = await PushNotifications.checkPermissions();
-
-    if (permStatus.receive !== "granted") {
-      permStatus = await PushNotifications.requestPermissions();
+    if (token) {
+      // Если токен передан (например, из Capacitor), сохраняем его
+      await saveFCMToken(userId, token);
+      return true;
     }
 
-    if (permStatus.receive === "granted") {
-      await PushNotifications.register();
-
-      PushNotifications.addListener("registration", async (token) => {
-        console.log("📲 Push registration success, token:", token.value);
-        await saveFCMToken(userId, token.value);
-      });
-
-      PushNotifications.addListener("registrationError", (err) => {
-        console.error("❌ Push registration error:", err.error);
-      });
-
-      return true;
-    } else {
-      console.warn("❌ Разрешение на пуш-уведомления не выдано");
+    // Веб-логика для получения токена
+    const permission = await Notification.requestPermission();
+    if (permission !== "granted") {
+      console.warn("❌ Разрешение на уведомления не предоставлено");
+      if (/Android/i.test(navigator.userAgent)) {
+        alert(
+          "Уведомления отключены. Пожалуйста, включите их в настройках устройства: Настройки > Приложения > Yo Bro > Уведомления."
+        );
+      }
       return false;
     }
+
+    const newToken = await getToken(messaging, { vapidKey: VAPID_KEY });
+    if (newToken) {
+      console.log("FCM-токен:", newToken);
+      await saveFCMToken(userId, newToken);
+      return true;
+    } else {
+      console.warn("⚠️ Не удалось получить FCM-токен");
+      return false;
+    }
+
+    // Сохраняем токен
+    await saveFCMToken(uid, token);
+    return true;
   } catch (error) {
     console.error("Ошибка при запросе разрешения на пуши:", error);
     return false;
@@ -78,11 +87,11 @@ export async function requestFCMPermission(userId) {
 }
 
 /**
- * Подписывается на уведомления в активном состоянии приложения.
+ * Подписывается на получение уведомлений в активном состоянии.
  */
 export function listenFCMMessages(callback) {
-  PushNotifications.addListener("pushNotificationReceived", (notification) => {
-    console.log("🔔 Получено уведомление:", notification);
-    callback(notification);
+  onMessage(messaging, (payload) => {
+    console.log("🔔 Получено уведомление в активном состоянии:", payload);
+    callback(payload);
   });
 }
