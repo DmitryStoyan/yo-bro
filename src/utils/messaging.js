@@ -1,9 +1,4 @@
-import {
-  // getMessaging,
-  getToken,
-  onMessage,
-  deleteToken,
-} from "firebase/messaging";
+import { PushNotifications } from "@capacitor/push-notifications";
 import {
   getFirestore,
   doc,
@@ -13,70 +8,71 @@ import {
 } from "firebase/firestore";
 import firebaseApp from "./firebase";
 
-const VAPID_KEY =
-  "BDYkhdsevukfsrIPM5iT0zPZp0aULZHFm7kzZsfnqtBYkeQoudMAGNDsNPlNj4kHcufJ2R9xlKt-lS1IzIOkxck";
-
-// const messaging = getMessaging(firebaseApp);
 const db = getFirestore(firebaseApp);
 
 /**
  * Сохраняет FCM-токен в Firestore (в массив fcmTokens).
  */
-async function saveFCMToken(userId, token) {
-  const userRef = doc(db, "users", userId, "ProfileInfo", "main");
-  await updateDoc(userRef, {
-    fcmTokens: arrayUnion(token),
-  });
-  console.log("✅ Токен сохранён в Firestore:", token);
+export async function saveFCMToken(userId, token) {
+  if (!userId || !token) return;
+  try {
+    const userRef = doc(db, "users", userId, "ProfileInfo", "main");
+    await updateDoc(userRef, {
+      fcmTokens: arrayUnion(token),
+    });
+    console.log("✅ Токен сохранён в Firestore:", token);
+  } catch (error) {
+    console.error("❌ Ошибка при сохранении FCM-токена:", error);
+  }
 }
 
 /**
  * Удаляет FCM-токен из Firestore (если он недействителен).
  */
 export async function removeFCMToken(userId, token) {
-  const userRef = doc(db, "users", userId, "ProfileInfo", "main");
-  await updateDoc(userRef, {
-    fcmTokens: arrayRemove(token),
-  });
-  console.log("🗑️ Удалён недействительный токен:", token);
+  if (!userId || !token) return;
+  try {
+    const userRef = doc(db, "users", userId, "ProfileInfo", "main");
+    await updateDoc(userRef, {
+      fcmTokens: arrayRemove(token),
+    });
+    console.log("🗑️ Удалён недействительный токен:", token);
+  } catch (error) {
+    console.error("❌ Ошибка при удалении FCM-токена:", error);
+  }
 }
 
 /**
- * Запрашивает разрешение на уведомления и регистрирует FCM-токен.
+ * Запрашивает разрешение на уведомления и регистрирует FCM-токен через Capacitor.
  * @param {string} userId - ID пользователя
- * @param {string} [token] - FCM-токен (опционально, если передан из Capacitor)
  */
-export async function requestFCMPermission(userId, token = null) {
+export async function requestFCMPermission(userId) {
   try {
-    if (token) {
-      // Если токен передан (например, из Capacitor), сохраняем его
-      await saveFCMToken(userId, token);
-      return true;
+    let permStatus = await PushNotifications.checkPermissions();
+
+    if (permStatus.receive !== "granted") {
+      permStatus = await PushNotifications.requestPermissions();
     }
 
-    // Веб-логика для получения токена
-    const permission = await Notification.requestPermission();
-    if (permission !== "granted") {
-      console.warn("❌ Разрешение на уведомления не предоставлено");
-      if (/Android/i.test(navigator.userAgent)) {
-        alert(
-          "Уведомления отключены. Пожалуйста, включите их в настройках устройства: Настройки > Приложения > Yo Bro > Уведомления."
-        );
-      }
-      return false;
-    }
+    if (permStatus.receive === "granted") {
+      await PushNotifications.register();
 
-    const newToken = await getToken(messaging, { vapidKey: VAPID_KEY });
-    if (newToken) {
-      console.log("FCM-токен:", newToken);
-      await saveFCMToken(userId, newToken);
+      PushNotifications.addListener("registration", async (token) => {
+        console.log("📲 Push registration success, token:", token.value);
+        await saveFCMToken(userId, token.value);
+      });
+
+      PushNotifications.addListener("registrationError", (err) => {
+        console.error("❌ Push registration error:", err.error);
+      });
+
       return true;
     } else {
-      console.warn("⚠️ Не удалось получить FCM-токен");
+      console.warn("❌ Разрешение на пуш-уведомления не выдано");
       return false;
     }
   } catch (error) {
-    console.error("Ошибка при получении токена:", error);
+    console.error("Ошибка при запросе разрешения на пуши:", error);
     return false;
   }
 }
@@ -85,8 +81,8 @@ export async function requestFCMPermission(userId, token = null) {
  * Подписывается на уведомления в активном состоянии приложения.
  */
 export function listenFCMMessages(callback) {
-  onMessage(messaging, (payload) => {
-    console.log("🔔 Получено уведомление в активном состоянии:", payload);
-    callback(payload);
+  PushNotifications.addListener("pushNotificationReceived", (notification) => {
+    console.log("🔔 Получено уведомление:", notification);
+    callback(notification);
   });
 }
