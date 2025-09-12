@@ -18,6 +18,7 @@ import {
 } from "firebase/firestore";
 import firebaseApp from "../utils/firebase";
 import { requestFCMPermission } from "@/utils/messaging";
+import { FirebaseMessaging } from "@capacitor-firebase/messaging";
 
 export const useUserStore = defineStore("user", () => {
   const userId = ref(null);
@@ -262,31 +263,45 @@ export const useUserStore = defineStore("user", () => {
     }
   };
 
-  onAuthStateChanged(auth, async (user) => {
-    if (user) {
-      userId.value = user.uid;
-      userEmail.value = user.email;
-      await fetchUserProfile();
-    } else {
-      userId.value = null;
-      userEmail.value = null;
-      userName.value = "";
-    }
-  });
+onAuthStateChanged(auth, async (user) => {
+  if (user) {
+    userId.value = user.uid;
+    userEmail.value = user.email;
+    await fetchUserProfile();
 
-  const saveFCMToken = async (uid, token) => {
-    if (!uid || !token) return;
+    // 📲 Запрашиваем FCM-токен только после логина
     try {
-      const userRef = doc(db, `users/${uid}/ProfileInfo`, "main");
-      await updateDoc(userRef, {
-        fcmToken: token,
-      });
-      console.log("FCM-токен сохранён в Firestore:", token);
-    } catch (error) {
-      console.error("Ошибка при сохранении FCM-токена:", error);
+      const permStatus = await FirebaseMessaging.requestPermissions();
+      if (permStatus.receive === "granted") {
+        const tokenResult = await FirebaseMessaging.getToken();
+        if (tokenResult.token) {
+          await saveFCMToken(user.uid, tokenResult.token);
+        }
+      } else {
+        console.warn("❌ Нет разрешений на уведомления");
+      }
+    } catch (err) {
+      console.error("🔥 Ошибка при получении токена:", err);
     }
-  };
+  } else {
+    userId.value = null;
+    userEmail.value = null;
+    userName.value = "";
+  }
+});
 
+const saveFCMToken = async (uid, token) => {
+  if (!uid || !token) return;
+  try {
+    const userRef = doc(db, `users/${uid}/ProfileInfo`, "main");
+    await updateDoc(userRef, {
+      fcmTokens: arrayUnion(token), // ✅ теперь массив
+    });
+    console.log("✅ FCM-токен добавлен в Firestore:", token);
+  } catch (error) {
+    console.error("🔥 Ошибка при сохранении FCM-токена:", error);
+  }
+};
   return {
     userId,
     userEmail,

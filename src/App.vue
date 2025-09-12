@@ -1,16 +1,24 @@
 <script setup>
-import { listenFCMMessages } from '@/utils/messaging';
-import { onMounted } from 'vue';
+import { onMounted } from "vue";
+import { requestFCMPermission, listenFCMMessages } from "src/utils/messaging";
+
 defineOptions({
-  name: 'App'
+  name: "App",
 });
 
 onMounted(() => {
+  // Запрашиваем разрешение и сохраняем токен
+  requestFCMPermission();
+
+  // Подписываемся на уведомления
   listenFCMMessages((payload) => {
-    const { title, body } = payload.notification;
-    alert(`🔔 ${title}: ${body}`);
+    const { title, body } = payload.notification || {};
+    if (title && body) {
+      alert(`🔔 ${title}: ${body}`);
+    }
+    console.log("📩 Уведомление в активном приложении:", payload);
   });
-})
+});
 </script>
 
 <template>

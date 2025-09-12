@@ -1,80 +1,54 @@
-import {
-  // getMessaging,
-  getToken,
-  onMessage,
-  deleteToken,
-} from "firebase/messaging";
-import {
-  getFirestore,
-  doc,
-  updateDoc,
-  arrayUnion,
-  arrayRemove,
-} from "firebase/firestore";
-import firebaseApp from "./firebase";
-
-const VAPID_KEY =
-  "BDYkhdsevukfsrIPM5iT0zPZp0aULZHFm7kzZsfnqtBYkeQoudMAGNDsNPlNj4kHcufJ2R9xlKt-lS1IzIOkxck";
-
-// const messaging = getMessaging(firebaseApp);
-const db = getFirestore(firebaseApp);
+import { FirebaseMessaging } from "@capacitor-firebase/messaging";
+import { getAuth } from "firebase/auth";
+import { getDatabase, ref, set, remove } from "firebase/database";
 
 /**
- * Сохраняет FCM-токен в Firestore (в массив fcmTokens).
+ * Сохраняет FCM-токен в Realtime Database.
+ * Токен сохраняется по пути: users/{uid}/fcmTokens/{token} = true
  */
 async function saveFCMToken(userId, token) {
-  const userRef = doc(db, "users", userId, "ProfileInfo", "main");
-  await updateDoc(userRef, {
-    fcmTokens: arrayUnion(token),
-  });
-  console.log("✅ Токен сохранён в Firestore:", token);
+  const db = getDatabase();
+  await set(ref(db, `users/${userId}/fcmTokens/${token}`), true);
+  console.log("✅ Токен сохранён в Realtime DB:", token);
 }
 
 /**
- * Удаляет FCM-токен из Firestore (если он недействителен).
+ * Удаляет FCM-токен из Realtime Database.
  */
 export async function removeFCMToken(userId, token) {
-  const userRef = doc(db, "users", userId, "ProfileInfo", "main");
-  await updateDoc(userRef, {
-    fcmTokens: arrayRemove(token),
-  });
+  const db = getDatabase();
+  await remove(ref(db, `users/${userId}/fcmTokens/${token}`));
   console.log("🗑️ Удалён недействительный токен:", token);
 }
 
 /**
- * Запрашивает разрешение на уведомления и регистрирует FCM-токен.
- * @param {string} userId - ID пользователя
- * @param {string} [token] - FCM-токен (опционально, если передан из Capacitor)
+ * Запрашивает разрешение и сохраняет FCM-токен в базе.
+ * @param {string} [userId] - UID пользователя. Если не передан, берётся из getAuth().
  */
-export async function requestFCMPermission(userId, token = null) {
+export async function requestFCMPermission(userId = null) {
   try {
-    if (token) {
-      // Если токен передан (например, из Capacitor), сохраняем его
-      await saveFCMToken(userId, token);
-      return true;
-    }
-
-    // Веб-логика для получения токена
-    const permission = await Notification.requestPermission();
-    if (permission !== "granted") {
+    const permStatus = await FirebaseMessaging.requestPermissions();
+    if (permStatus.receive !== "granted") {
       console.warn("❌ Разрешение на уведомления не предоставлено");
-      if (/Android/i.test(navigator.userAgent)) {
-        alert(
-          "Уведомления отключены. Пожалуйста, включите их в настройках устройства: Настройки > Приложения > Yo Bro > Уведомления."
-        );
-      }
       return false;
     }
 
-    const newToken = await getToken(messaging, { vapidKey: VAPID_KEY });
-    if (newToken) {
-      console.log("FCM-токен:", newToken);
-      await saveFCMToken(userId, newToken);
-      return true;
-    } else {
-      console.warn("⚠️ Не удалось получить FCM-токен");
+    // Получаем FCM-токен
+    const { token } = await FirebaseMessaging.getToken();
+    console.log("📲 FCM-токен:", token);
+
+    // Определяем UID пользователя
+    const user = getAuth().currentUser;
+    const uid = userId || (user ? user.uid : null);
+
+    if (!uid) {
+      console.warn("⚠️ Нет авторизованного пользователя — токен не сохранён");
       return false;
     }
+
+    // Сохраняем токен
+    await saveFCMToken(uid, token);
+    return true;
   } catch (error) {
     console.error("Ошибка при получении токена:", error);
     return false;
@@ -82,11 +56,11 @@ export async function requestFCMPermission(userId, token = null) {
 }
 
 /**
- * Подписывается на уведомления в активном состоянии приложения.
+ * Подписывается на получение уведомлений в активном состоянии.
  */
 export function listenFCMMessages(callback) {
-  onMessage(messaging, (payload) => {
-    console.log("🔔 Получено уведомление в активном состоянии:", payload);
-    callback(payload);
+  FirebaseMessaging.addListener("notificationReceived", (payload) => {
+    console.log("🔔 Получено уведомление:", payload);
+    if (callback) callback(payload);
   });
 }
