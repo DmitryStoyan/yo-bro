@@ -49,9 +49,12 @@ const initPush = async () => {
   });
 
   // Событие: взаимодействие с уведомлением (тап)
-  PushNotifications.addListener("pushNotificationActionPerformed", (notification) => {
-    console.log("👉 Пользователь тапнул по уведомлению:", notification);
-  });
+  PushNotifications.addListener(
+    "pushNotificationActionPerformed",
+    (notification) => {
+      console.log("👉 Пользователь тапнул по уведомлению:", notification);
+    }
+  );
 };
 
 initPush();

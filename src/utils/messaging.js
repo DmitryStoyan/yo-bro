@@ -1,48 +1,79 @@
-import { FirebaseMessaging } from "@capacitor-firebase/messaging";
-import { getAuth } from "firebase/auth";
-import { getDatabase, ref, set, remove } from "firebase/database";
+import {
+  // getMessaging,
+  getToken,
+  onMessage,
+  deleteToken,
+} from "firebase/messaging";
+import {
+  getFirestore,
+  doc,
+  updateDoc,
+  arrayUnion,
+  arrayRemove,
+} from "firebase/firestore";
+import firebaseApp from "./firebase";
+
+const VAPID_KEY =
+  "BDYkhdsevukfsrIPM5iT0zPZp0aULZHFm7kzZsfnqtBYkeQoudMAGNDsNPlNj4kHcufJ2R9xlKt-lS1IzIOkxck";
+
+// const messaging = getMessaging(firebaseApp);
+const db = getFirestore(firebaseApp);
 
 /**
  * Сохраняет FCM-токен в Realtime Database.
  * Токен сохраняется по пути: users/{uid}/fcmTokens/{token} = true
  */
 async function saveFCMToken(userId, token) {
-  const db = getDatabase();
-  await set(ref(db, `users/${userId}/fcmTokens/${token}`), true);
-  console.log("✅ Токен сохранён в Realtime DB:", token);
+  const userRef = doc(db, "users", userId, "ProfileInfo", "main");
+  await updateDoc(userRef, {
+    fcmTokens: arrayUnion(token),
+  });
+  console.log("✅ Токен сохранён в Firestore:", token);
 }
 
 /**
  * Удаляет FCM-токен из Realtime Database.
  */
 export async function removeFCMToken(userId, token) {
-  const db = getDatabase();
-  await remove(ref(db, `users/${userId}/fcmTokens/${token}`));
+  const userRef = doc(db, "users", userId, "ProfileInfo", "main");
+  await updateDoc(userRef, {
+    fcmTokens: arrayRemove(token),
+  });
   console.log("🗑️ Удалён недействительный токен:", token);
 }
 
 /**
- * Запрашивает разрешение и сохраняет FCM-токен в базе.
- * @param {string} [userId] - UID пользователя. Если не передан, берётся из getAuth().
+ * Запрашивает разрешение на уведомления и регистрирует FCM-токен.
+ * @param {string} userId - ID пользователя
+ * @param {string} [token] - FCM-токен (опционально, если передан из Capacitor)
  */
-export async function requestFCMPermission(userId = null) {
+export async function requestFCMPermission(userId, token = null) {
   try {
-    const permStatus = await FirebaseMessaging.requestPermissions();
-    if (permStatus.receive !== "granted") {
+    if (token) {
+      // Если токен передан (например, из Capacitor), сохраняем его
+      await saveFCMToken(userId, token);
+      return true;
+    }
+
+    // Веб-логика для получения токена
+    const permission = await Notification.requestPermission();
+    if (permission !== "granted") {
       console.warn("❌ Разрешение на уведомления не предоставлено");
+      if (/Android/i.test(navigator.userAgent)) {
+        alert(
+          "Уведомления отключены. Пожалуйста, включите их в настройках устройства: Настройки > Приложения > Yo Bro > Уведомления."
+        );
+      }
       return false;
     }
 
-    // Получаем FCM-токен
-    const { token } = await FirebaseMessaging.getToken();
-    console.log("📲 FCM-токен:", token);
-
-    // Определяем UID пользователя
-    const user = getAuth().currentUser;
-    const uid = userId || (user ? user.uid : null);
-
-    if (!uid) {
-      console.warn("⚠️ Нет авторизованного пользователя — токен не сохранён");
+    const newToken = await getToken(messaging, { vapidKey: VAPID_KEY });
+    if (newToken) {
+      console.log("FCM-токен:", newToken);
+      await saveFCMToken(userId, newToken);
+      return true;
+    } else {
+      console.warn("⚠️ Не удалось получить FCM-токен");
       return false;
     }
 
@@ -50,7 +81,7 @@ export async function requestFCMPermission(userId = null) {
     await saveFCMToken(uid, token);
     return true;
   } catch (error) {
-    console.error("Ошибка при получении токена:", error);
+    console.error("Ошибка при запросе разрешения на пуши:", error);
     return false;
   }
 }
@@ -59,8 +90,8 @@ export async function requestFCMPermission(userId = null) {
  * Подписывается на получение уведомлений в активном состоянии.
  */
 export function listenFCMMessages(callback) {
-  FirebaseMessaging.addListener("notificationReceived", (payload) => {
-    console.log("🔔 Получено уведомление:", payload);
-    if (callback) callback(payload);
+  onMessage(messaging, (payload) => {
+    console.log("🔔 Получено уведомление в активном состоянии:", payload);
+    callback(payload);
   });
 }
