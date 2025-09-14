@@ -99,7 +99,7 @@ onMounted(() => {
         class="q-mt-md search-btn" />
     </q-form>
 
-    <p v-if="isSearchPerformed && searchResults.length === 0">Пользователи не найдены</p>
+    <p v-if="isSearchPerformed && searchResults.length === 0">Пользователи не найдены.</p>
 
     <ul v-else>
       <li v-for="user in searchResults" :key="user.id">
