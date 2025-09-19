@@ -5,48 +5,151 @@ import { getFirestore } from 'firebase/firestore'
 import { useUserStore } from '@/stores/userStore';
 import { v4 as uuidv4 } from 'uuid';
 import Loader from 'src/components/Loader.vue';
+import { is } from 'quasar';
 
 const db = getFirestore()
 const userStore = useUserStore()
 
 const url = 'https://cakeshop.com.ua/images/AcpSe7kFpmzMfgJUwhyXbNbja_gwkleunua5ZVM9jTQ/h:5000/bG9jYWw/6Ly8vY2FrZXNob3AuY29tLnVhL3B1YmxpY19odG1sL3N0b3JhZ2UvYXBwL3B1YmxpYy9pbWcvcHJvZHVjdC81NzEzXzEuanBn'
 const isLoading = ref(false)
+const isEditing = ref(false)
+
 
 const updateProfile = async () => {
   isLoading.value = true;
   await userStore.updateUserProfile(userStore.userName)
   isLoading.value = false;
+  isEditing.value - false
   console.log('Имя пользователя изменено на: ', userStore.userName)
 }
 
 </script>
 
 <template>
-  <q-page>
-    <h2 class="title">Мой профиль</h2>
+  <q-page class="page">
+    <div class="navbar">
+      <div class="nav-left">
+        <q-btn class="navbar__arrow_back-btn glass-btn" icon="arrow_back"></q-btn>
+        <h2 class="title">Профиль</h2>
+      </div>
+      <q-btn class="navbar__logout-btn glass-btn" icon="logout"></q-btn>
+    </div>
     <div class="content">
-      <q-img :src="url" class="profile-avatar">
-        <template v-slot:loading>
-          <q-spinner-gears color="white"></q-spinner-gears>
-        </template>
-      </q-img>
-      <q-input class="q-mb-md" outlined label="Email" v-model="userStore.userEmail" readonly />
-      <q-input class="q-mb-md" outlined label="Имя пользователя" v-model="userStore.userName" />
-      <Loader class="loader" v-if="isLoading" />
-      <q-btn v-else label="Сохранить" color="blue" @click="updateProfile" />
+      <div class="content__avatar">
+        <q-img :src="url" class="profile-avatar">
+          <template v-slot:loading>
+            <q-spinner-gears color="white"></q-spinner-gears>
+          </template>
+        </q-img>
+        <q-btn class="content__avatar-btn glass-btn" round icon="photo_camera"></q-btn>
+      </div>
+      <div class="content__form glass-block">
+        <div class="flex justify-between items-center q-mb-md">
+          <h3 class="content__title">Информация профиля</h3>
+
+          <div v-if="!isEditing">
+            <q-btn class="glass-btn" label="Редактировать" icon="edit" @click="isEditing = true"></q-btn>
+          </div>
+
+          <div class="flex" v-else>
+            <q-btn class="glass-btn" label="Save" icon="save" @click="updateProfile"></q-btn>
+            <Loader class="loader" v-if="isLoading" />
+            <q-btn class="glass-btn" v-else label="Cancel" icon="close" @click="isEditing = false"></q-btn>
+          </div>
+        </div>
+
+        <div v-if="!isEditing">
+          <div>
+            <label class='content__form-label' for="">Email</label>
+            <p class="content__form-value">{{ userStore.userEmail }}</p>
+          </div>
+          <div>
+            <label class='content__form-label' for="">Имя пользователя</label>
+            <p class="content__form-value">{{ userStore.userName }}</p>
+          </div>
+          <div>
+            <label class='content__form-label' for="">Bro c </label>
+            <p class="content__form-value">09.04.2025</p>
+          </div>
+        </div>
+
+        <div v-else class="content__form">
+          <label class='content__form-label' for="">Email</label>
+          <q-input class="content__form-input q-mb-md" borderless v-model="userStore.userEmail" readonly />
+          <label class='content__form-label' for="">Имя пользователя</label>
+          <q-input class="content__form-input q-mb-md" borderless v-model="userStore.userName" />
+          <!-- <Loader class="loader" v-if="isLoading" /> -->
+          <!-- <q-btn v-else label="Сохранить" color="blue" @click="updateProfile" /> -->
+        </div>
+      </div>
+
+      <div class="statistics glass-block">
+        <h3 class="content__title">Статистика</h3>
+
+        <div class="statistics-content">
+          <div class="statistic-item">
+            <p class="statistic-value">12</p>
+            <p class="statistic-label">Братаны</p>
+          </div>
+          <div class="statistic-item">
+            <p class="statistic-value">156</p>
+            <p class="statistic-label">Отправлено Yo</p>
+          </div>
+          <div class="statistic-item">
+            <p class="statistic-value">23</p>
+            <p class="statistic-label">Дней с первого Yo</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="achievements glass-block">
+        <h3 class="content__title">Достижения</h3>
+
+        <div class="achievements-content">
+          <div class="achievements-item">
+            <q-img class="achievements-img" src="../assets/achievements/firstYo.png"></q-img>
+            <div class="achievements-item-text">
+              <p class="achievements-name">First Yo</p>
+              <p class="achievements-description">Отправить свой первый Йоу</p>
+            </div>
+          </div>
+          <div class="achievements-item">
+            <q-img class="achievements-img" src="../assets/achievements/connector.png"></q-img>
+            <div class="achievements-item-text">
+              <p class="achievements-name">Connector</p>
+              <p class="achievements-description">Добавить 10 братанов</p>
+            </div>
+          </div>
+          <div class="achievements-item">
+            <q-img class="achievements-img" src="../assets/achievements/yoMaster.png"></q-img>
+            <div class="achievements-item-text">
+              <p class="achievements-name">Yo Master</p>
+              <p class="achievements-description">Отправить 500 Йоу</p>
+            </div>
+          </div>
+          <div class="achievements-item">
+            <q-img class="achievements-img" src="../assets/achievements/popular.png"></q-img>
+            <div class="achievements-item-text">
+              <p class="achievements-name">Popular</p>
+              <p class="achievements-description">Добавить 50 братанов</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
     </div>
   </q-page>
 </template>
 
 <style scoped>
-.q-page {
-  /* display: flex;
+.page {
+  min-height: 100vh;
+  background: linear-gradient(122deg, #8c28fa, #009ce8);
+  color: white;
+  display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: center; */
-  min-height: 100vh;
-  background: #ffffff;
-  padding: 20px;
+  justify-content: flex-start;
 }
 
 .content {
@@ -55,12 +158,30 @@ const updateProfile = async () => {
   display: flex;
   flex-direction: column;
   align-items: center;
+  padding: 0 20px;
+
+}
+
+.navbar {
+  width: 100%;
+  max-width: 1365px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 20px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.3);
+  padding: 0 20px;
+}
+
+.nav-left {
+  display: flex;
+  align-items: center;
 }
 
 .title {
-  text-align: center;
-  color: #333;
-  font-size: 24px;
+  color: white;
+  font-size: 20px;
+  font-weight: normal;
 }
 
 .profile-avatar {
@@ -69,21 +190,157 @@ const updateProfile = async () => {
   border-radius: 50%;
   overflow: hidden;
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-  margin-bottom: 35px;
 }
 
 .q-input {
   width: 100%;
 }
 
-.q-btn {
+.content__form-input {
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 8px;
+  color: white;
+  padding: 0px 10px;
+}
+
+.content__form-label {
+  font-size: 14px;
+  opacity: 0.8;
+  color: white;
+  margin-bottom: 5px;
+  display: block;
+}
+
+.content__form-value {
+  font-size: 16px;
+  font-weight: normal;
+}
+
+.statistics-content {
+  display: flex;
+  justify-content: space-between;
   width: 100%;
+  margin: 20px 0 0 0;
+}
+
+.statistic-item {
+  text-align: center;
+  flex: 1;
+}
+
+.statistic-value {
+  font-size: 24px;
+  font-weight: bold;
+  margin-bottom: 5px;
+}
+
+.q-btn {
   max-width: 200px;
   font-size: 16px;
   font-weight: bold;
-  padding: 10px;
-  border-radius: 8px;
   transition: all 0.3s ease;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  color: white;
+}
+
+.q-btn,
+.q-btn:before,
+.q-btn:after,
+.q-btn__content {
+  box-shadow: none !important;
+}
+
+
+.q-btn .q-icon,
+.q-btn {
+  font-size: 10px;
+}
+
+.glass-btn {
+  background: rgba(255, 255, 255, 0.2);
+  backdrop-filter: blur(2px);
+}
+
+.glass-block {
+  padding: 20px;
+  margin: 0 0 30px 0;
+  border-radius: 15px;
+  max-width: 500px;
+  width: 100%;
+  background: rgba(255, 255, 255, 0.2);
+  backdrop-filter: blur(2px);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+}
+
+.navbar__arrow_back-btn {
+  width: 35px;
+  height: 35px;
+  border-radius: 10px;
+  margin: 0 15px 0 0;
+}
+
+.navbar__logout-btn {
+  width: 25px;
+  height: 25px;
+  border-radius: 10px;
+  background: rgba(255, 0, 13, 0.3);
+}
+
+.content__avatar {
+  position: relative;
+  margin-bottom: 35px;
+}
+
+.content__avatar-btn {
+  background: rgba(255, 255, 255, 0.2);
+  position: absolute;
+  top: 80%;
+  right: 0;
+}
+
+.content__title {
+  font-size: 16px;
+  font-weight: normal;
+}
+
+.achievements-content {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 15px;
+}
+
+.achievements-item {
+  display: flex;
+  align-items: center;
+  margin-bottom: 15px;
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(2px);
+  border-radius: 15px;
+  padding: 10px;
+}
+
+.achievements-item-text {
+  width: 115px;
+}
+
+.achievements-img {
+  width: 35px;
+  height: 35px;
+  margin-right: 15px;
+}
+
+.achievements-name {
+  font-size: 14px;
+  font-weight: bold;
+  margin: 0;
+}
+
+.achievements-description {
+  font-size: 12px;
+  opacity: 0.8;
+  margin: 0;
 }
 
 .q-btn:hover {
