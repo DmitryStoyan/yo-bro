@@ -44,17 +44,18 @@ const updateProfile = async () => {
         <q-btn class="content__avatar-btn glass-btn" round icon="photo_camera"></q-btn>
       </div>
       <div class="content__form glass-block">
-        <div class="flex justify-between items-center q-mb-md">
+        <div class="flex justify-between items-center q-mb-lg">
           <h3 class="content__title">Информация профиля</h3>
 
           <div v-if="!isEditing">
-            <q-btn class="glass-btn" label="Редактировать" icon="edit" @click="isEditing = true"></q-btn>
+            <q-btn class="glass-btn" label="Edit" icon="edit" @click="isEditing = true"></q-btn>
           </div>
 
-          <div class="flex" v-else>
-            <q-btn class="glass-btn" label="Save" icon="save" @click="updateProfile"></q-btn>
+          <div class="buttons-wrapper flex" v-else>
+            <q-btn class="content__save-btn glass-btn" label="" icon="save" @click="updateProfile"></q-btn>
             <Loader class="loader" v-if="isLoading" />
-            <q-btn class="glass-btn" v-else label="Cancel" icon="close" @click="isEditing = false"></q-btn>
+            <q-btn class="content__cancel-btn glass-btn" v-else label="" icon="close"
+              @click="isEditing = false"></q-btn>
           </div>
         </div>
 
@@ -78,13 +79,11 @@ const updateProfile = async () => {
           <q-input class="content__form-input q-mb-md" borderless v-model="userStore.userEmail" readonly />
           <label class='content__form-label' for="">Имя пользователя</label>
           <q-input class="content__form-input q-mb-md" borderless v-model="userStore.userName" />
-          <!-- <Loader class="loader" v-if="isLoading" /> -->
-          <!-- <q-btn v-else label="Сохранить" color="blue" @click="updateProfile" /> -->
         </div>
       </div>
 
       <div class="statistics glass-block">
-        <h3 class="content__title">Статистика</h3>
+        <h3 class="content__title q-mb-lg">Статистика</h3>
 
         <div class="statistics-content">
           <div class="statistic-item">
@@ -103,17 +102,17 @@ const updateProfile = async () => {
       </div>
 
       <div class="achievements glass-block">
-        <h3 class="content__title">Достижения</h3>
+        <h3 class="content__title q-mb-lg">Достижения</h3>
 
         <div class="achievements-content">
-          <div class="achievements-item">
+          <div class="achievements-item achievement_received">
             <q-img class="achievements-img" src="../assets/achievements/firstYo.png"></q-img>
             <div class="achievements-item-text">
               <p class="achievements-name">First Yo</p>
               <p class="achievements-description">Отправить свой первый Йоу</p>
             </div>
           </div>
-          <div class="achievements-item">
+          <div class="achievements-item achievement_received">
             <q-img class="achievements-img" src="../assets/achievements/connector.png"></q-img>
             <div class="achievements-item-text">
               <p class="achievements-name">Connector</p>
@@ -203,6 +202,15 @@ const updateProfile = async () => {
   padding: 0px 10px;
 }
 
+.content__cancel-btn {
+  background: rgba(251, 0, 0, 0.5) !important;
+}
+
+.content__save-btn {
+  background: rgba(66, 165, 0, 0.5) !important;
+}
+
+
 .content__form-label {
   font-size: 14px;
   opacity: 0.8;
@@ -216,16 +224,28 @@ const updateProfile = async () => {
   font-weight: normal;
 }
 
+.buttons-wrapper {
+  gap: 10px;
+}
+
 .statistics-content {
-  display: flex;
-  justify-content: space-between;
   width: 100%;
-  margin: 20px 0 0 0;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(80px, 1fr));
+  gap: 10px;
+  margin: 15px 0 0 0;
+}
+
+.statistic-label {
+  width: 90%;
+  opacity: 0.8;
 }
 
 .statistic-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
   text-align: center;
-  flex: 1;
 }
 
 .statistic-value {
@@ -272,6 +292,7 @@ const updateProfile = async () => {
   background: rgba(255, 255, 255, 0.2);
   backdrop-filter: blur(2px);
   border: 1px solid rgba(255, 255, 255, 0.3);
+  min-width: 300px;
 }
 
 .navbar__arrow_back-btn {
@@ -303,31 +324,31 @@ const updateProfile = async () => {
 .content__title {
   font-size: 16px;
   font-weight: normal;
+  line-height: normal;
+  max-width: 100%;
+  max-width: 140px;
 }
 
 .achievements-content {
   display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 15px;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 10px;
 }
 
 .achievements-item {
   display: flex;
   align-items: center;
-  margin-bottom: 15px;
   background: rgba(255, 255, 255, 0.1);
   backdrop-filter: blur(2px);
   border-radius: 15px;
   padding: 10px;
-}
-
-.achievements-item-text {
-  width: 115px;
+  min-height: 77px;
+  opacity: 0.6;
 }
 
 .achievements-img {
-  width: 35px;
-  height: 35px;
+  width: clamp(30px, 20%, 35px);
+  height: clamp(30px, 20%, 35px);
   margin-right: 15px;
 }
 
@@ -341,6 +362,10 @@ const updateProfile = async () => {
   font-size: 12px;
   opacity: 0.8;
   margin: 0;
+}
+
+.achievement_received {
+  opacity: 1;
 }
 
 .q-btn:hover {
