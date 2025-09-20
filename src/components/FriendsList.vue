@@ -5,6 +5,7 @@ import { getFirestore, doc, getDoc } from "firebase/firestore";
 import firebaseApp from "src/utils/firebase";
 import Loader from "./Loader.vue";
 import { sendYoBro } from "src/utils/sendYoBro";
+import NavBar from "./NavBar.vue";
 
 const db = getFirestore(firebaseApp);
 const userStore = useUserStore();
@@ -90,6 +91,9 @@ onMounted(() => {
 </script>
 
 <template>
+
+  <NavBar />
+
   <div class="container">
     <h2 class="title">Друзья</h2>
 
@@ -130,8 +134,8 @@ onMounted(() => {
   max-width: 1920px;
   margin: 0 auto;
   padding: 20px;
-  background: #ffffff;
   border-radius: 12px;
+  min-height: 100vh;
 }
 
 .title {

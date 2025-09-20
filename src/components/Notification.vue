@@ -4,6 +4,7 @@ import { useUserStore } from 'src/stores/userStore';
 import { getFirestore, doc, getDoc, query, where, collection } from 'firebase/firestore';
 import firebaseApp from "src/utils/firebase";
 import Loader from './Loader.vue';
+import NavBar from './NavBar.vue';
 
 
 const userStore = useUserStore();
@@ -41,7 +42,8 @@ watchEffect(() => {
 
 <template>
   <div class="notifications-container">
-    <h2 class="title">Уведомления</h2>
+    <NavBar />
+    <!-- <h2 class="title">Уведомления</h2> -->
     <p v-if="userStore.incomingRequests.length == 0" class="no-notifications">Нет уведомлений</p>
     <ul v-else class="notifications-list">
       <li v-for="request in userStore.incomingRequests" :key="request.id" class="notification-item">
@@ -66,17 +68,17 @@ watchEffect(() => {
   border-radius: 8px;
   position: relative;
   min-height: 100vh;
+  color: white;
 }
 
 .title {
   text-align: center;
-  color: #333;
   font-size: 24px;
+  font-weight: normal;
 }
 
 .no-notifications {
   text-align: center;
-  color: #888;
   font-style: italic;
   position: absolute;
   top: 50%;

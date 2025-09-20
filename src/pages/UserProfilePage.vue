@@ -6,6 +6,7 @@ import { useUserStore } from '@/stores/userStore';
 import { v4 as uuidv4 } from 'uuid';
 import Loader from 'src/components/Loader.vue';
 import { is } from 'quasar';
+import NavBar from 'src/components/NavBar.vue';
 
 const db = getFirestore()
 const userStore = useUserStore()
@@ -19,7 +20,7 @@ const updateProfile = async () => {
   isLoading.value = true;
   await userStore.updateUserProfile(userStore.userName)
   isLoading.value = false;
-  isEditing.value - false
+  isEditing.value = false
   console.log('Имя пользователя изменено на: ', userStore.userName)
 }
 
@@ -27,13 +28,9 @@ const updateProfile = async () => {
 
 <template>
   <q-page class="page">
-    <div class="navbar">
-      <div class="nav-left">
-        <q-btn class="navbar__arrow_back-btn glass-btn" icon="arrow_back"></q-btn>
-        <h2 class="title">Профиль</h2>
-      </div>
-      <q-btn class="navbar__logout-btn glass-btn" icon="logout"></q-btn>
-    </div>
+
+    <NavBar />
+
     <div class="content">
       <div class="content__avatar">
         <q-img :src="url" class="profile-avatar">
@@ -143,7 +140,8 @@ const updateProfile = async () => {
 <style scoped>
 .page {
   min-height: 100vh;
-  background: linear-gradient(122deg, #8c28fa, #009ce8);
+  /* background: linear-gradient(122deg, #8c28fa, #009ce8); */
+  background: transparent;
   color: white;
   display: flex;
   flex-direction: column;
@@ -159,28 +157,6 @@ const updateProfile = async () => {
   align-items: center;
   padding: 0 20px;
 
-}
-
-.navbar {
-  width: 100%;
-  max-width: 1365px;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  margin-bottom: 20px;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.3);
-  padding: 0 20px;
-}
-
-.nav-left {
-  display: flex;
-  align-items: center;
-}
-
-.title {
-  color: white;
-  font-size: 20px;
-  font-weight: normal;
 }
 
 .profile-avatar {
@@ -295,20 +271,6 @@ const updateProfile = async () => {
   min-width: 300px;
 }
 
-.navbar__arrow_back-btn {
-  width: 35px;
-  height: 35px;
-  border-radius: 10px;
-  margin: 0 15px 0 0;
-}
-
-.navbar__logout-btn {
-  width: 25px;
-  height: 25px;
-  border-radius: 10px;
-  background: rgba(255, 0, 13, 0.3);
-}
-
 .content__avatar {
   position: relative;
   margin-bottom: 35px;
@@ -369,7 +331,7 @@ const updateProfile = async () => {
 }
 
 .q-btn:hover {
-  background-color: #1976d2;
+  /* background-color: #1976d2; */
   transform: scale(1.05);
 }
 

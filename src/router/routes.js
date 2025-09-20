@@ -55,13 +55,13 @@ const routes = [
       },
       {
         path: "/friendsList",
-        name: "friendsList",
+        name: "FriendsList",
         component: FriendsList,
         beforeEnter: checkAuth,
       },
       {
         path: "/notification",
-        name: "notification",
+        name: "Notification",
         component: Notification,
         beforeEnter: checkAuth,
       },

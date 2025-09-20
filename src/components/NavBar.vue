@@ -1,21 +1,20 @@
 <script setup>
-import { useRouter } from 'vue-router';
+import { useRouter, useRoute } from 'vue-router';
 import { useUserStore } from 'src/stores/userStore';
 import { computed } from 'vue';
 
 const userStore = useUserStore();
 const router = useRouter();
+const route = useRoute();
 
-const isAuthenticated = computed(() => !!userStore.userId)
-
-const navigationLinks = [
-  { label: 'Профиль', path: '/profile' },
-  { label: 'Друзья', path: '/friendsList' },
-  { label: 'Уведомления', path: '/notification' },
-]
+const currentView = computed(() => route.name)
 
 const navigateTo = (path) => {
   router.push(path)
+}
+
+const goBack = () => {
+  router.back()
 }
 
 const logOut = async () => {
@@ -26,54 +25,116 @@ const logOut = async () => {
 
 <template>
   <q-header class="navbar">
-    <div class="navbar-container">
-      <img class="logo" src="@/assets/logo/logo.jpg" alt="Yo" @click="navigateTo('/')">
-
-      <div v-if="isAuthenticated" class="nav-links">
-        <q-btn v-for="link in navigationLinks" :key="link.path" :label="link.label" @click="navigateTo(link.path)"
-          class="nav-button" />
+    <template v-if="currentView == 'Profile'">
+      <div class="nav-left">
+        <q-btn class="navbar__btn navbar__arrow_back-btn glass-btn" icon="arrow_back"
+          @click="navigateTo('FriendsList')"></q-btn>
+        <h2 class="title">Профиль</h2>
       </div>
-      <q-btn v-if="isAuthenticated" label="Выход" @click="logOut" class="logout-button" />
-      <q-btn v-else label="Вход\Регистриция" class="logout-button" @click="navigateTo('/auth')" />
-    </div>
+      <q-btn class="navbar__btn navbar__logout-btn glass-btn" icon="logout" @click="logOut"></q-btn>
+    </template>
+
+    <template v-else-if="currentView == 'FriendsList'">
+      <div class="nav-left">
+        <q-btn class="navbar__btn glass-btn" icon="person" @click="navigateTo('Profile')"></q-btn>
+        <h2 class="title">Йоу, бро!</h2>
+      </div>
+      <div class="nav-right">
+        <q-btn class="navbar__btn navbar__notification-btn glass-btn" icon="notifications"
+          @click="navigateTo('Notification')"></q-btn>
+        <q-btn class="navbar__btn glass-btn" icon="search"></q-btn>
+        <q-btn class="navbar__btn navbar__logout-btn glass-btn" icon="logout" @click="logOut"></q-btn>
+      </div>
+    </template>
+
+    <template v-if="currentView == 'Notification'">
+      <div class="nav-left">
+        <q-btn class="navbar__btn navbar__arrow_back-btn glass-btn" icon="arrow_back"
+          @click="navigateTo('FriendsList')"></q-btn>
+        <h2 class="title">Уведомления</h2>
+      </div>
+    </template>
+
+
   </q-header>
 </template>
 
 <style scoped>
 .navbar {
-  background: black;
-  position: fixed;
-  top: 0;
-  left: 0;
   width: 100%;
+  max-width: 1365px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 20px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.3);
+  padding: 0 20px;
+  margin: 0 auto;
+  background: transparent;
   z-index: 10;
-  padding: 10px 20px;
+  background: linear-gradient(90deg, #667eea, #764ba2);
+  /* background: linear-gradient(90deg, #8c28fa, #009ce8); */
+}
+
+.nav-left {
   display: flex;
   align-items: center;
-  justify-content: space-between;
+  gap: 10px;
 }
 
-.navbar-container {
-  width: 100%;
+.nav-right {
   display: flex;
   align-items: center;
-  justify-content: space-between;
+  gap: 10px;
 }
 
-.logo {
-  width: 40px;
-  height: 40px;
-  cursor: pointer;
-}
-
-.nav-links {
-  display: flex;
-  gap: 15px;
-}
-
-.nav-button,
-.logout-button {
+.title {
   color: white;
-  border: 1px solid white;
+  font-size: 20px;
+  font-weight: normal;
+}
+
+.navbar__btn {
+  width: 35px;
+  height: 35px;
+  border-radius: 10px;
+}
+
+.navbar__arrow_back-btn {
+  margin: 0 15px 0 0;
+}
+
+.navbar__logout-btn {
+  width: 25px;
+  height: 25px;
+  border-radius: 10px;
+  background: rgba(255, 0, 13, 0.3);
+}
+
+.q-btn,
+.q-btn:before,
+.q-btn:after,
+.q-btn__content {
+  box-shadow: none !important;
+}
+
+
+.q-btn .q-icon,
+.q-btn {
+  font-size: 10px;
+}
+
+.glass-btn {
+  background: rgba(255, 255, 255, 0.2);
+  backdrop-filter: blur(2px);
+}
+
+.q-btn:hover {
+  /* background-color: #1976d2; */
+  transform: scale(1.05);
+}
+
+.q-btn:active {
+  transform: scale(0.98);
 }
 </style>
