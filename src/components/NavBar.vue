@@ -31,7 +31,7 @@ const logOut = async () => {
           @click="navigateTo('FriendsList')"></q-btn>
         <h2 class="title">Профиль</h2>
       </div>
-      <q-btn class="navbar__btn navbar__logout-btn glass-btn" icon="logout" @click="logOut"></q-btn>
+      <q-btn class="navbar__btn glass-btn" icon="logout" @click="logOut"></q-btn>
     </template>
 
     <template v-else-if="currentView == 'FriendsList'">
@@ -43,7 +43,7 @@ const logOut = async () => {
         <q-btn class="navbar__btn navbar__notification-btn glass-btn" icon="notifications"
           @click="navigateTo('Notification')"></q-btn>
         <q-btn class="navbar__btn glass-btn" icon="search"></q-btn>
-        <q-btn class="navbar__btn navbar__logout-btn glass-btn" icon="logout" @click="logOut"></q-btn>
+        <q-btn class="navbar__btn glass-btn" icon="logout" @click="logOut"></q-btn>
       </div>
     </template>
 
@@ -52,6 +52,14 @@ const logOut = async () => {
         <q-btn class="navbar__btn navbar__arrow_back-btn glass-btn" icon="arrow_back"
           @click="navigateTo('FriendsList')"></q-btn>
         <h2 class="title">Уведомления</h2>
+      </div>
+    </template>
+
+    <template v-if="currentView == 'AddFriend'">
+      <div class="nav-left">
+        <q-btn class="navbar__btn navbar__arrow_back-btn glass-btn" icon="arrow_back"
+          @click="navigateTo('FriendsList')"></q-btn>
+        <h2 class="title">Добавить друга</h2>
       </div>
     </template>
 
@@ -102,13 +110,6 @@ const logOut = async () => {
 
 .navbar__arrow_back-btn {
   margin: 0 15px 0 0;
-}
-
-.navbar__logout-btn {
-  width: 25px;
-  height: 25px;
-  border-radius: 10px;
-  background: rgba(255, 0, 13, 0.3);
 }
 
 .q-btn,

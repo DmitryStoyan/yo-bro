@@ -73,7 +73,7 @@ const getErrorMessage = (errorCode) => {
     <div class="header">
       <q-img class="header__logo" src="../assets/logo/bro.png"></q-img>
       <h2 class="header__title">Йоу Бро</h2>
-      <p class="header__subtitle">Будь на связи со своим братаном</p>
+      <p class="header__subtitle">Будь на связи со своими братанами</p>
     </div>
 
     <div class="form sign-in-form" v-if="tab === 'authorization'">
@@ -164,7 +164,7 @@ const getErrorMessage = (errorCode) => {
 
 .q-card {
   width: 100%;
-  max-width: 700px;
+  max-width: 500px;
   padding: 20px;
   border-radius: 12px;
   background: transparent;

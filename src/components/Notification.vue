@@ -61,10 +61,9 @@ watchEffect(() => {
 
 <style scoped>
 .notifications-container {
-  width: 95%;
+  width: 90%;
   max-width: 1920px;
   margin: 0 auto;
-  padding: 20px;
   border-radius: 8px;
   position: relative;
   min-height: 100vh;
@@ -75,6 +74,22 @@ watchEffect(() => {
   text-align: center;
   font-size: 24px;
   font-weight: normal;
+}
+
+.glass-block {
+  padding: 10px;
+  border-radius: 15px;
+  max-width: 700px;
+  width: 100%;
+  background: rgba(255, 255, 255, 0.2);
+  backdrop-filter: blur(2px);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  min-width: 300px;
+}
+
+.glass-btn {
+  background: rgba(255, 255, 255, 0.2);
+  backdrop-filter: blur(2px);
 }
 
 .no-notifications {

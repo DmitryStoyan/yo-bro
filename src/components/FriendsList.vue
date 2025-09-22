@@ -6,6 +6,9 @@ import firebaseApp from "src/utils/firebase";
 import Loader from "./Loader.vue";
 import { sendYoBro } from "src/utils/sendYoBro";
 import NavBar from "./NavBar.vue";
+import { useRouter } from 'vue-router';
+
+const router = useRouter()
 
 const db = getFirestore(firebaseApp);
 const userStore = useUserStore();
@@ -95,17 +98,16 @@ onMounted(() => {
   <NavBar />
 
   <div class="container">
-    <h2 class="title">Друзья</h2>
 
-    <q-form @submit.prevent="loadUsers(searchQuery)">
+    <!-- <q-form @submit.prevent="loadUsers(searchQuery)">
       <q-input outlined v-model="searchQuery" label="Введите имя друга" />
       <q-btn :disabled="searchQuery.length === 0" type="submit" label="Поиск" color="primary"
         class="q-mt-md search-btn" />
-    </q-form>
+    </q-form> -->
 
-    <p v-if="isSearchPerformed && searchResults.length === 0">Пользователи не найдены.</p>
+    <!-- <p v-if="isSearchPerformed && searchResults.length === 0">Пользователи не найдены.</p> -->
 
-    <ul v-else>
+    <!-- <ul v-else>
       <li v-for="user in searchResults" :key="user.id">
         {{ user.userName }}
         <q-btn v-if="user.requestPending && !isLoading" round color="red" icon="delete"
@@ -114,35 +116,40 @@ onMounted(() => {
           @click="sendRequest(user.id, user.userName)" />
         <Loader v-else />
       </li>
-    </ul>
+    </ul> -->
+
+    <div class="flex justify-between items-center q-mt-lg">
+      <span>Твои Братаны ({{ friendsList.length }})</span>
+      <q-btn class="add-friend-btn glass-btn" label="" icon="add" @click="router.push({ name: 'AddFriend' })" />
+    </div>
 
     <Loader v-if="isLoadingFriends" />
     <p v-if="friendsList.length === 0">У вас нет добавленных друзей</p>
     <ul v-else>
-      <li v-for="friend in friendsList" :key="friend.id">
+      <li class="friend glass-block" v-for="friend in friendsList" :key="friend.id">
         {{ friend.name }}
-        <q-btn :loading="isLoading" color="primary" icon="handshake" label="Yo Bro"
-          @click="sendYoBroToFriend(friend.id)" />
+        <q-btn class="yo-btn" :loading="isLoading" color="primary" @click="sendYoBroToFriend(friend.id)">
+          YO!
+          <img class="yo-icon" src="../assets/logo/fist-bump.png" />
+        </q-btn>
       </li>
     </ul>
   </div>
+
+
+  <!-- <AddFriend v-if="isAddFriendOpen" /> -->
+
+
 </template>
 
 <style scoped>
 .container {
-  width: 95%;
+  width: 90%;
   max-width: 1920px;
   margin: 0 auto;
-  padding: 200px;
   border-radius: 12px;
   min-height: 100vh;
-}
-
-.title {
-  text-align: center;
-  color: #333;
-  font-size: 24px;
-  margin: 0 0 30px 0;
+  color: white;
 }
 
 .q-input {
@@ -165,25 +172,62 @@ ul {
   list-style: none;
   padding: 0;
   margin: 20px 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
 
-li {
+.friend {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 10px 15px;
   background: #f5f5f5;
   border-radius: 8px;
   margin-bottom: 10px;
+  font-weight: 500;
   transition: background 0.3s;
 }
 
+.glass-btn {
+  background: rgba(255, 255, 255, 0.2);
+  backdrop-filter: blur(2px);
+}
+
+.glass-block {
+  padding: 10px;
+  border-radius: 15px;
+  max-width: 700px;
+  width: 100%;
+  background: rgba(255, 255, 255, 0.2);
+  backdrop-filter: blur(2px);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  min-width: 300px;
+}
+
 li:hover {
-  background: #e0e0e0;
+  background: rgba(255, 255, 255, 0.4);
 }
 
 .search-btn {
   margin: 0 0 30px 0;
+}
+
+.yo-btn {
+  background: linear-gradient(45deg, #ef35a1, #9b17f7) !important;
+}
+
+.yo-icon {
+  width: 20px;
+  height: 20px;
+  margin-left: 8px;
+}
+
+.add-friend-btn {
+  width: 20px;
+  height: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .q-btn[icon="add"] {
