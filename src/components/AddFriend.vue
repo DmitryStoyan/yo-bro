@@ -61,7 +61,7 @@ const cancelRequest = async (userId) => {
 
 <style scoped>
 .container {
-  width: 90%;
+  width: 100%;
   min-height: 100vh;
   position: absolute;
   padding: 80px 0 0 0;
