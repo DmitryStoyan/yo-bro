@@ -10,7 +10,7 @@ import Authorization from '../components/Authorization.vue'
 
 <template>
   <q-page class="flex column">
-    <h2 class="title">Страница авторизации</h2>
+    <!-- <h2 class="title">Страница авторизации</h2> -->
     <Authorization />
   </q-page>
 </template>
@@ -22,7 +22,6 @@ import Authorization from '../components/Authorization.vue'
   display: flex;
   justify-content: center;
   align-items: center;
-  color: white;
 }
 
 .title {

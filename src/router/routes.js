@@ -38,7 +38,8 @@ const routes = [
       {
         path: "",
         name: "Home",
-        component: PageHome,
+        // component: PageHome,
+        component: AuthPage,
         beforeEnter: checkAuth,
       },
       {

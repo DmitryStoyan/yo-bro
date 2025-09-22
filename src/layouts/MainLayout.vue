@@ -13,7 +13,7 @@ import NavBar from 'src/components/NavBar.vue';
 
 <style scoped>
 .q-page-container {
-  padding: 85px 0 0 0 !important;
+  /* padding: 85px 0 0 0 !important; */
 }
 
 .page {

@@ -9,7 +9,7 @@ import Loader from './Loader.vue';
 const router = useRouter()
 const auth = getAuth(app);
 
-const tab = ref('mails')
+const tab = ref('authorization')
 const isLoading = ref(false)
 const errorMesaage = ref('')
 
@@ -42,7 +42,7 @@ const signIn = async () => {
   errorMesaage.value = ''
   try {
     await signInWithEmailAndPassword(auth, loginForm.value.email, loginForm.value.password)
-    router.push('/')
+    router.push('FriendsList')
     console.log('Вход выполнен')
   } catch (error) {
     errorMesaage.value = getErrorMessage(error.code)
@@ -69,55 +69,93 @@ const getErrorMessage = (errorCode) => {
 </script>
 
 <template>
-  <div>
+  <div class="content">
+    <div class="header">
+      <q-img class="header__logo" src="../assets/logo/bro.png"></q-img>
+      <h2 class="header__title">Йоу Бро</h2>
+      <p class="header__subtitle">Будь на связи со своим братаном</p>
+    </div>
 
-    <q-card>
-      <q-tabs v-model="tab" dense class="text-grey" active-color="primary" indicator-color="primary" align="justify"
-        narrow-indicator>
-        <q-tab name="mails" label="Войти" />
-        <q-tab name="alarms" label="Регистрация" />
-      </q-tabs>
+    <div class="form sign-in-form" v-if="tab === 'authorization'">
+      <q-card>
+        <q-input v-model="loginForm.email" label="Email"></q-input>
+        <q-input v-model="loginForm.password" label="Password"></q-input>
 
-      <q-separator />
+        <div v-if="errorMesaage" class="error-message">{{ errorMesaage }}</div>
 
-      <q-tab-panels class="content" v-model="tab" animated>
-        <q-tab-panel name="mails">
-          <div class="text-h6">Войти в аккаунт</div>
-          <q-input class="input" outlined v-model="loginForm.email" label="Email" />
-          <q-input type="password" outlined v-model="loginForm.password" label="Пароль" />
+        <loader v-if="isLoading" />
+        <q-btn @click="signIn">YO!</q-btn>
+      </q-card>
 
-          <div v-if="errorMesaage" class="error-message">{{ errorMesaage }}</div>
+      <div class="flex items-center justify-center q-mt-md">
+        <span class="sign-text">Ещё нет аккаунта?</span>
+        <q-btn flat dense no-caps class="form-btn sign-up-btn" @click="tab = 'register'" label="Зарегистрироваться" />
+      </div>
+    </div>
 
-          <loader v-if="isLoading" />
-          <q-btn v-else label="Войти" color="primary" @click="signIn()" class="q-mt-md" />
+    <div class="form sign-up-form" v-if="tab === 'register'">
+      <q-card>
+        <q-input label="Username"></q-input>
+        <q-input v-model="registerForm.email" label="Email"></q-input>
+        <q-input v-model="registerForm.password" label="Password"></q-input>
+        <q-input label="Confirm Password"></q-input>
 
-        </q-tab-panel>
+        <div v-if="errorMesaage" class="error-message">{{ errorMesaage }}</div>
 
-        <q-tab-panel name="alarms">
-          <div class="text-h6">Регистрация</div>
-          <q-input outlined v-model="registerForm.email" label="Email" />
-          <q-input type="password" outlined v-model="registerForm.password" label="Пароль" />
+        <loader v-if="isLoading" />
+        <q-btn @click="signUp">YO!</q-btn>
+      </q-card>
 
-          <div v-if="errorMesaage" class="error-message">{{ errorMesaage }}</div>
-
-          <loader v-if="isLoading" />
-          <q-btn v-else label="Регистрация" color="primary" @click="signUp()" class="q-mt-md" />
-        </q-tab-panel>
-
-      </q-tab-panels>
-    </q-card>
-
+      <div class="flex items-center justify-center q-mt-md">
+        <span class="sign-text">Уже есть аккаунт?</span>
+        <q-btn flat dense no-caps class="form-btn sign-up-btn" @click="tab = 'authorization'" label="Войти" />
+      </div>
+    </div>
   </div>
 </template>
 
 <style scoped>
 .q-page {
-  background: linear-gradient(135deg, #667eea, #764ba2);
+  /* background: linear-gradient(135deg, #667eea, #764ba2); */
   min-height: 100vh;
   display: flex;
+  flex-direction: column;
   justify-content: center;
   align-items: center;
   color: white;
+}
+
+.content {
+  max-width: 1920px;
+  width: 95%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 0 20px;
+}
+
+.header {
+  text-align: center;
+  margin: 0 0 30px 0;
+  color: white;
+}
+
+.header__logo {
+  width: clamp(30px, 30%, 65px);
+  height: clamp(30px, 30%, 65px);
+}
+
+.header__title {
+  font-size: clamp(2.5rem, 4vw, 3rem);
+  font-weight: normal;
+}
+
+.form {
+  width: 100%;
+}
+
+.form-btn {
+  text-decoration: underline;
 }
 
 .q-card {
@@ -125,12 +163,12 @@ const getErrorMessage = (errorCode) => {
   max-width: 700px;
   padding: 20px;
   border-radius: 12px;
-  background: #c4cdff;
-  box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.3);
-}
-
-.q-tab-panel {
-  background: #c4cdff;
+  background: transparent;
+  box-shadow: 0;
+  border: 1px solid rgba(255, 255, 255, 0.5);
+  backdrop-filter: blur(10px);
+  background: rgba(255, 255, 255, 0.2);
+  backdrop-filter: blur(2px);
 }
 
 .text-h6 {
@@ -142,18 +180,14 @@ const getErrorMessage = (errorCode) => {
 }
 
 .q-input {
-  background: rgba(255, 255, 255, 0.3);
+  /* background: rgba(255, 255, 255, 0.3); */
+  background: transparent;
+  border: 1px solid rgba(255, 255, 255, 0.5);
   border-radius: 8px;
-  width: 400px;
+  /* width: 400px; */
+  width: 100%;
   margin: 0 0 20px 0;
-}
-
-.q-input:last-of-type {
-  margin: 0;
-}
-
-.q-input input {
-  color: black;
+  padding: 0 10px;
 }
 
 .q-btn {
@@ -162,23 +196,26 @@ const getErrorMessage = (errorCode) => {
   border-radius: 8px;
   font-size: 1rem;
   transition: all 0.3s;
+  background: white;
+  color: #667eea;
+}
+
+.sign-up-btn {
+  background: none;
+  border: none;
+  color: white;
+  width: auto;
+  padding: 0;
+}
+
+.sign-text {
+  color: white;
+  margin-right: 10px;
+  opacity: 0.8;
 }
 
 .q-btn:hover {
   opacity: 0.8;
-}
-
-.q-tabs {
-  background: transparent;
-}
-
-.q-tab {
-  color: white;
-  font-weight: bold;
-}
-
-.q-separator {
-  background: rgba(255, 255, 255, 0.3);
 }
 
 .error-message {

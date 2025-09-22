@@ -155,7 +155,7 @@ const updateProfile = async () => {
   display: flex;
   flex-direction: column;
   align-items: center;
-  padding: 0 20px;
+  padding: 30px 20px 0 20px;
 
 }
 

@@ -5,8 +5,6 @@
 <template>
   <q-page class="page">
 
-    <q-img class="bg-img" src="../assets/background/homeBG.gif" />
-
     <div class="description-wrapper">
       <h1 class="title">Yo Bro</h1>
       <p class="subtitle">Простой способ сказать Yo Bro!</p>
@@ -28,16 +26,6 @@
   flex-direction: column;
   align-items: center;
   justify-content: center;
-}
-
-.bg-img {
-  position: fixed;
-  width: 100%;
-  height: 100%;
-  top: 0;
-  left: 0;
-  object-fit: cover;
-  z-index: -1;
 }
 
 .header {

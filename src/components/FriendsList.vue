@@ -133,7 +133,7 @@ onMounted(() => {
   width: 95%;
   max-width: 1920px;
   margin: 0 auto;
-  padding: 20px;
+  padding: 200px;
   border-radius: 12px;
   min-height: 100vh;
 }
