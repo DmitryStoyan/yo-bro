@@ -43,10 +43,9 @@ watchEffect(() => {
 <template>
   <div class="notifications-container">
     <NavBar />
-    <!-- <h2 class="title">Уведомления</h2> -->
     <p v-if="userStore.incomingRequests.length == 0" class="no-notifications">Нет уведомлений</p>
     <ul v-else class="notifications-list">
-      <li v-for="request in userStore.incomingRequests" :key="request.id" class="notification-item">
+      <li v-for="request in userStore.incomingRequests" :key="request.id" class="notification-item glass-block">
         <span class="request-from">{{ request.fromUserName }}</span>
         <div class="actions" v-if="!isLoading">
           <q-btn round color="green" icon="add" @click="acceptFriendRequest(request.id)"
@@ -102,6 +101,10 @@ watchEffect(() => {
 }
 
 .notifications-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin: 20px 0 0 0;
   list-style: none;
   padding: 0;
 }
@@ -110,21 +113,11 @@ watchEffect(() => {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 12px;
-  margin: 8px 0;
-  background-color: #fff;
-  border-radius: 8px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
-  transition: transform 0.2s ease;
-}
-
-.notification-item:hover {
-  transform: translateY(-5px);
+  margin: 0 auto;
 }
 
 .request-from {
   font-weight: bold;
-  color: #333;
 }
 
 .actions {
@@ -147,6 +140,11 @@ watchEffect(() => {
 .accept-btn:hover {
   background-color: #45a049;
   transform: scale(1.1);
+  background: none;
+  border: none;
+  color: white;
+  background: #03cb0ba3;
+  border-radius: 7px;
 }
 
 .decline-btn:hover {

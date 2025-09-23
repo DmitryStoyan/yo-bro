@@ -42,7 +42,7 @@ const logOut = async () => {
       <div class="nav-right">
         <q-btn class="navbar__btn navbar__notification-btn glass-btn" icon="notifications"
           @click="navigateTo('Notification')"></q-btn>
-        <q-btn class="navbar__btn glass-btn" icon="search"></q-btn>
+        <q-btn class="navbar__btn glass-btn" icon="search" @click="navigateTo('AddFriend')"></q-btn>
         <q-btn class="navbar__btn glass-btn" icon="logout" @click="logOut"></q-btn>
       </div>
     </template>

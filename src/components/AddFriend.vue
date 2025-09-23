@@ -83,10 +83,12 @@ const cancelRequest = async (userId) => {
   justify-content: space-between;
   gap: 10px;
   width: 95%;
+  max-width: 700px;
 }
 
 .search-input {
-  width: 90%;
+  /* width: 90%; */
+  flex: 1;
 }
 
 .search-btn {
