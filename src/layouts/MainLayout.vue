@@ -5,6 +5,9 @@ import NavBar from 'src/components/NavBar.vue';
 <template>
   <q-layout view="lHh Lpr lFf">
     <!-- <nav-bar /> -->
+    <q-header elevated class="bg-dark text-white">
+      <NavBar />
+    </q-header>
     <q-page-container class="page">
       <router-view />
     </q-page-container>

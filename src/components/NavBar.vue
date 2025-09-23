@@ -82,6 +82,9 @@ const logOut = async () => {
   z-index: 10;
   background: linear-gradient(90deg, #667eea, #764ba2);
   /* background: linear-gradient(90deg, #8c28fa, #009ce8); */
+  padding-top: constant(safe-area-inset-top);
+  padding-top: env(safe-area-inset-top);
+
 }
 
 .nav-left {
