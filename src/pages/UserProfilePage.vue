@@ -15,10 +15,23 @@ const url = 'https://cakeshop.com.ua/images/AcpSe7kFpmzMfgJUwhyXbNbja_gwkleunua5
 const isLoading = ref(false)
 const isEditing = ref(false)
 
+const localUserName = ref('');
+
+const startEditing = () => {
+  localUserName.value = userStore.userName;
+  isEditing.value = true;
+}
+
+const cancelEditing = () => {
+  localUserName.value = userStore.userName;
+  isEditing.value = false;
+
+}
+
 
 const updateProfile = async () => {
   isLoading.value = true;
-  await userStore.updateUserProfile(userStore.userName)
+  await userStore.updateUserProfile(localUserName.value)
   isLoading.value = false;
   isEditing.value = false
   console.log('Имя пользователя изменено на: ', userStore.userName)
@@ -45,14 +58,13 @@ const updateProfile = async () => {
           <h3 class="content__title">Информация профиля</h3>
 
           <div v-if="!isEditing">
-            <q-btn class="glass-btn" label="Edit" icon="edit" @click="isEditing = true"></q-btn>
+            <q-btn class="glass-btn" label="Edit" icon="edit" @click="startEditing"></q-btn>
           </div>
 
           <div class="buttons-wrapper flex" v-else>
             <q-btn class="content__save-btn glass-btn" label="" icon="save" @click="updateProfile"></q-btn>
             <Loader class="loader" v-if="isLoading" />
-            <q-btn class="content__cancel-btn glass-btn" v-else label="" icon="close"
-              @click="isEditing = false"></q-btn>
+            <q-btn class="content__cancel-btn glass-btn" v-else label="" icon="close" @click="cancelEditing"></q-btn>
           </div>
         </div>
 
@@ -75,7 +87,7 @@ const updateProfile = async () => {
           <label class='content__form-label' for="">Email</label>
           <q-input class="content__form-input q-mb-md" borderless v-model="userStore.userEmail" readonly />
           <label class='content__form-label' for="">Имя пользователя</label>
-          <q-input class="content__form-input q-mb-md" borderless v-model="userStore.userName" />
+          <q-input class="content__form-input q-mb-md" borderless v-model="localUserName" />
         </div>
       </div>
 
