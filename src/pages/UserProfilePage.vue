@@ -29,7 +29,7 @@ const updateProfile = async () => {
 <template>
   <q-page class="page">
 
-    <NavBar />
+    <!-- <NavBar /> -->
 
     <div class="content">
       <div class="content__avatar">
@@ -139,6 +139,7 @@ const updateProfile = async () => {
 
 <style scoped>
 .page {
+  padding: 61px 0 0 0 !important;
   min-height: 100vh;
   /* background: linear-gradient(122deg, #8c28fa, #009ce8); */
   background: transparent;

@@ -8,6 +8,7 @@ const router = useRouter();
 const route = useRoute();
 
 const currentView = computed(() => route.name)
+const notificationCount = computed(() => userStore.incomingRequests.length)
 
 const navigateTo = (path) => {
   router.push(path)
@@ -40,8 +41,11 @@ const logOut = async () => {
         <h2 class="title">Йоу, бро!</h2>
       </div>
       <div class="nav-right">
-        <q-btn class="navbar__btn navbar__notification-btn glass-btn" icon="notifications"
-          @click="navigateTo('Notification')"></q-btn>
+        <div class="notification-wrapper">
+          <q-btn class="navbar__btn navbar__notification-btn glass-btn" icon="notifications"
+            @click="navigateTo('Notification')"></q-btn>
+          <q-badge v-if="notificationCount > 0" color="red" floating transparent rounded :label="notificationCount" />
+        </div>
         <q-btn class="navbar__btn glass-btn" icon="search" @click="navigateTo('AddFriend')"></q-btn>
         <q-btn class="navbar__btn glass-btn" icon="logout" @click="logOut"></q-btn>
       </div>
@@ -97,6 +101,10 @@ const logOut = async () => {
   display: flex;
   align-items: center;
   gap: 10px;
+}
+
+.notification-wrapper {
+  position: relative;
 }
 
 .title {

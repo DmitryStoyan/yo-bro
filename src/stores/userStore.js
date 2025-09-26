@@ -27,6 +27,8 @@ export const useUserStore = defineStore("user", () => {
   const searchResults = ref([]);
   const incomingRequests = ref([]);
 
+  let unsubscribeFriendRequests = null;
+
   const auth = getAuth(firebaseApp);
   const db = getFirestore(firebaseApp);
 
@@ -165,28 +167,24 @@ export const useUserStore = defineStore("user", () => {
     }
   };
 
-  const getFriendRequests = async () => {
-    try {
-      const friendQuery = query(
-        collection(db, "friendRequests"),
-        where("toUserId", "==", userId.value)
-      );
+  const startFriendRequestsListener = () => {
+    if (!userId.value) return;
 
-      onSnapshot(friendQuery, (querySnapshot) => {
-        incomingRequests.value = [];
-
-        querySnapshot.forEach((doc) => {
-          incomingRequests.value.push({
-            id: doc.id,
-            fromUserName: doc.data().fromUserName,
-          });
-        });
-
-        console.log("Обновленные запросы:", incomingRequests.value);
-      });
-    } catch (error) {
-      console.error("Ошибка при получении запросов в друзья:", error);
+    if (unsubscribeFriendRequests) {
+      unsubscribeFriendRequests();
     }
+
+    const friendQuery = query(
+      collection(db, "friendRequests"),
+      where("toUserId", "==", userId.value)
+    );
+
+    unsubscribeFriendRequests = onSnapshot(friendQuery, (querySnapshot) => {
+      incomingRequests.value = querySnapshot.docs.map((doc) => ({
+        id: doc.id,
+        fromUserName: doc.data().fromUserName,
+      }));
+    });
   };
 
   const declineFriendRequest = async (requestId) => {
@@ -269,7 +267,8 @@ export const useUserStore = defineStore("user", () => {
       userEmail.value = user.email;
       await fetchUserProfile();
 
-      // 📲 Запрашиваем FCM-токен только после логина
+      startFriendRequestsListener();
+
       try {
         const permStatus = await FirebaseMessaging.requestPermissions();
         if (permStatus.receive === "granted") {
@@ -287,6 +286,11 @@ export const useUserStore = defineStore("user", () => {
       userId.value = null;
       userEmail.value = null;
       userName.value = "";
+
+      if (unsubscribeFriendRequests) {
+        unsubscribeFriendRequests();
+        unsubscribeFriendRequests = null;
+      }
     }
   });
 
@@ -295,7 +299,7 @@ export const useUserStore = defineStore("user", () => {
     try {
       const userRef = doc(db, `users/${uid}/ProfileInfo`, "main");
       await updateDoc(userRef, {
-        fcmTokens: arrayUnion(token), // ✅ теперь массив
+        fcmTokens: arrayUnion(token),
       });
       console.log("✅ FCM-токен добавлен в Firestore:", token);
     } catch (error) {
@@ -315,7 +319,6 @@ export const useUserStore = defineStore("user", () => {
     searchUsers,
     sendFriendRequest,
     cancelFriendRequest,
-    getFriendRequests,
     declineFriendRequest,
     acceptFriendRequest,
     getFriends,

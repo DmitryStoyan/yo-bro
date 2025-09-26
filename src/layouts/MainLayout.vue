@@ -4,7 +4,6 @@ import NavBar from 'src/components/NavBar.vue';
 
 <template>
   <q-layout view="lHh Lpr lFf">
-    <!-- <nav-bar /> -->
     <q-header elevated class="bg-dark text-white">
       <NavBar />
     </q-header>

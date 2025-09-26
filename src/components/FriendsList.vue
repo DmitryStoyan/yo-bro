@@ -8,6 +8,7 @@ import { sendYoBro } from "src/utils/sendYoBro";
 import NavBar from "./NavBar.vue";
 import { useRouter } from 'vue-router';
 
+
 const router = useRouter()
 
 const db = getFirestore(firebaseApp);
@@ -95,7 +96,7 @@ onMounted(() => {
 
 <template>
 
-  <NavBar />
+  <!-- <NavBar /> -->
 
   <div class="container">
 
@@ -137,6 +138,8 @@ onMounted(() => {
   </div>
 
 
+
+
   <!-- <AddFriend v-if="isAddFriendOpen" /> -->
 
 
@@ -144,6 +147,7 @@ onMounted(() => {
 
 <style scoped>
 .container {
+  padding: 61px 0 0 0 !important;
   width: 90%;
   max-width: 1920px;
   margin: 0 auto;

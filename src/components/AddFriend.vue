@@ -39,7 +39,7 @@ const cancelRequest = async (userId) => {
 
 <template>
   <div class="container q-mt-lg">
-    <NavBar />
+    <!-- <NavBar /> -->
     <q-form class="search-form" @submit.prevent="loadUsers(searchQuery)">
       <q-input class="search-input" outlined v-model="searchQuery" label="Введите имя друга" />
       <q-btn :disabled="searchQuery.length === 0" type="submit" icon="search" class="search-btn glass-btn" />
@@ -61,19 +61,7 @@ const cancelRequest = async (userId) => {
 
 <style scoped>
 .container {
-  /* width: 100%;
-  min-height: 100vh;
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: transparent;
-  color: white;
-  background: linear-gradient(90deg, #667eea, #764ba2);
-  display: flex;
-  flex-direction: column;
-  align-items: center; */
+  padding: 60px 0 0 0 !important;
   width: 90%;
   max-width: 1920px;
   margin: 0 auto;
@@ -94,7 +82,6 @@ const cancelRequest = async (userId) => {
 }
 
 .search-input {
-  /* width: 90%; */
   flex: 1;
 }
 

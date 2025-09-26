@@ -9,7 +9,7 @@ import NavBar from './NavBar.vue';
 
 const userStore = useUserStore();
 const db = getFirestore(firebaseApp);
-const isLoadingNotificationList = ref(true)
+const isLoadingNotificationList = ref(false)
 const isLoading = ref(false)
 
 const deleteRequest = async (requestId) => {
@@ -25,24 +25,11 @@ const acceptFriendRequest = async (requestId) => {
   isLoading.value = false
 }
 
-onMounted(() => {
-  userStore.getFriendRequests()
-  isLoadingNotificationList.value = false
-})
-
-watchEffect(() => {
-  if (userStore.userId) {
-    isLoadingNotificationList.value = true
-    userStore.getFriendRequests();
-    isLoadingNotificationList.value = false
-  }
-});
-
 </script>
 
 <template>
   <div class="notifications-container">
-    <NavBar />
+    <!-- <NavBar /> -->
     <p v-if="userStore.incomingRequests.length == 0" class="no-notifications">Нет уведомлений</p>
     <ul v-else class="notifications-list">
       <li v-for="request in userStore.incomingRequests" :key="request.id" class="notification-item glass-block">
@@ -60,6 +47,7 @@ watchEffect(() => {
 
 <style scoped>
 .notifications-container {
+  padding: 61px 0 0 0 !important;
   width: 90%;
   max-width: 1920px;
   margin: 0 auto;
