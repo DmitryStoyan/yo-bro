@@ -5,6 +5,8 @@ import { useUserStore } from '@/stores/userStore';
 import { ref } from 'vue';
 import { useRouter } from 'vue-router';
 import Loader from './Loader.vue';
+import { getFirestore, doc, setDoc } from "firebase/firestore";
+
 
 const router = useRouter()
 const auth = getAuth(app);
@@ -20,29 +22,62 @@ const loginForm = ref({
 
 const registerForm = ref({
   email: '',
-  password: ''
-})
+  password: '',
+  confirmPassword: '',
+  username: ''
+});
+
 
 const signUp = async () => {
   isLoading.value = true;
   errorMesaage.value = '';
-  try {
-    await createUserWithEmailAndPassword(auth, registerForm.value.email, registerForm.value.password)
-    console.log('Регистрация выполнена')
-  } catch (error) {
-    errorMesaage.value = getErrorMessage(error.code)
-    console.log(error.message)
-  } finally {
-    isLoading.value = false
+
+  if (!registerForm.value.username.trim()) {
+    errorMesaage.value = 'Введите имя пользователя';
+    isLoading.value = false;
+    return;
   }
-}
+
+  if (registerForm.value.password !== registerForm.value.confirmPassword) {
+    errorMesaage.value = 'Пароли не совпадают';
+    isLoading.value = false;
+    return;
+  }
+
+  try {
+    const userCredential = await createUserWithEmailAndPassword(
+      auth,
+      registerForm.value.email,
+      registerForm.value.password
+    );
+    const user = userCredential.user;
+
+    const db = getFirestore(app);
+    const profileRef = doc(db, `users/${user.uid}/ProfileInfo`, "main");
+    await setDoc(profileRef, {
+      userName: registerForm.value.username,
+      userNameLower: registerForm.value.username.toLowerCase(),
+      friends: [],
+      fcmTokens: []
+    });
+
+    console.log('Регистрация выполнена и профиль создан');
+    router.push("/friendsList");
+  } catch (error) {
+    errorMesaage.value = getErrorMessage(error.code);
+    console.log(error.message);
+  } finally {
+    isLoading.value = false;
+  }
+};
+
 
 const signIn = async () => {
   isLoading.value = true;
   errorMesaage.value = ''
   try {
     await signInWithEmailAndPassword(auth, loginForm.value.email, loginForm.value.password)
-    router.push('FriendsList')
+    router.push('friendsList')
     console.log('Вход выполнен')
   } catch (error) {
     errorMesaage.value = getErrorMessage(error.code)
@@ -95,10 +130,10 @@ const getErrorMessage = (errorCode) => {
 
     <div class="form sign-up-form" v-if="tab === 'register'">
       <q-card>
-        <q-input label="Username"></q-input>
+        <q-input v-model="registerForm.username" label="Username"></q-input>
         <q-input v-model="registerForm.email" label="Email"></q-input>
         <q-input v-model="registerForm.password" label="Password"></q-input>
-        <q-input label="Confirm Password"></q-input>
+        <q-input v-model="registerForm.confirmPassword" label="Confirm Password"></q-input>
 
         <div v-if="errorMesaage" class="error-message">{{ errorMesaage }}</div>
 
