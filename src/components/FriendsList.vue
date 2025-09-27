@@ -96,28 +96,7 @@ onMounted(() => {
 
 <template>
 
-  <!-- <NavBar /> -->
-
   <div class="container">
-
-    <!-- <q-form @submit.prevent="loadUsers(searchQuery)">
-      <q-input outlined v-model="searchQuery" label="Введите имя друга" />
-      <q-btn :disabled="searchQuery.length === 0" type="submit" label="Поиск" color="primary"
-        class="q-mt-md search-btn" />
-    </q-form> -->
-
-    <!-- <p v-if="isSearchPerformed && searchResults.length === 0">Пользователи не найдены.</p> -->
-
-    <!-- <ul v-else>
-      <li v-for="user in searchResults" :key="user.id">
-        {{ user.userName }}
-        <q-btn v-if="user.requestPending && !isLoading" round color="red" icon="delete"
-          @click="cancelRequest(user.id)" />
-        <q-btn v-else-if="!user.requestPending && !isLoading" round color="green" icon="add"
-          @click="sendRequest(user.id, user.userName)" />
-        <Loader v-else />
-      </li>
-    </ul> -->
 
     <div class="flex justify-between items-center q-mt-lg">
       <span>Твои Братаны ({{ friendsList.length }})</span>
@@ -136,13 +115,6 @@ onMounted(() => {
       </li>
     </ul>
   </div>
-
-
-
-
-  <!-- <AddFriend v-if="isAddFriendOpen" /> -->
-
-
 </template>
 
 <style scoped>

@@ -1,5 +1,5 @@
 <script setup>
-import { ref } from 'vue';
+import { ref, onMounted } from 'vue';
 import { getAuth } from 'firebase/auth';
 import { getFirestore } from 'firebase/firestore'
 import { useUserStore } from '@/stores/userStore';
@@ -28,7 +28,6 @@ const cancelEditing = () => {
 
 }
 
-
 const updateProfile = async () => {
   isLoading.value = true;
   await userStore.updateUserProfile(localUserName.value)
@@ -37,12 +36,14 @@ const updateProfile = async () => {
   console.log('Имя пользователя изменено на: ', userStore.userName)
 }
 
+onMounted(() => {
+  userStore.loadFriends();
+})
+
 </script>
 
 <template>
   <q-page class="page">
-
-    <!-- <NavBar /> -->
 
     <div class="content">
       <div class="content__avatar">
@@ -96,7 +97,7 @@ const updateProfile = async () => {
 
         <div class="statistics-content">
           <div class="statistic-item">
-            <p class="statistic-value">12</p>
+            <p class="statistic-value">{{ userStore.friends.length }}</p>
             <p class="statistic-label">Братаны</p>
           </div>
           <div class="statistic-item">

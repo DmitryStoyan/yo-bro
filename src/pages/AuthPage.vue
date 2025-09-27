@@ -10,7 +10,6 @@ import Authorization from '../components/Authorization.vue'
 
 <template>
   <q-page class="flex column">
-    <!-- <h2 class="title">Страница авторизации</h2> -->
     <Authorization />
   </q-page>
 </template>

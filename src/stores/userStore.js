@@ -26,6 +26,7 @@ export const useUserStore = defineStore("user", () => {
   const userName = ref("");
   const searchResults = ref([]);
   const incomingRequests = ref([]);
+  const friends = ref([]);
 
   let unsubscribeFriendRequests = null;
 
@@ -261,6 +262,37 @@ export const useUserStore = defineStore("user", () => {
     }
   };
 
+  const loadFriends = async () => {
+    if (!userId.value) return;
+    try {
+      const userRef = doc(db, "users", userId.value, "ProfileInfo", "main");
+      const userSnap = await getDoc(userRef);
+
+      if (userSnap.exists()) {
+        const userData = userSnap.data();
+        const friendIds = userData.friends || [];
+
+        const loadedFriends = [];
+        for (const friendId of friendIds) {
+          const friendRef = doc(db, "users", friendId, "ProfileInfo", "main");
+          const friendSnap = await getDoc(friendRef);
+          if (friendSnap.exists()) {
+            loadedFriends.push({
+              id: friendId,
+              name: friendSnap.data().userName,
+            });
+          }
+        }
+        friends.value = loadedFriends;
+      } else {
+        friends.value = [];
+      }
+    } catch (error) {
+      console.error("Ошибка при загрузке друзей:", error);
+      friends.value = [];
+    }
+  };
+
   onAuthStateChanged(auth, async (user) => {
     if (user) {
       userId.value = user.uid;
@@ -312,6 +344,7 @@ export const useUserStore = defineStore("user", () => {
     userName,
     searchResults,
     incomingRequests,
+    friends,
     fetchUserProfile,
     updateUserProfile,
     logOut,
@@ -323,5 +356,6 @@ export const useUserStore = defineStore("user", () => {
     acceptFriendRequest,
     getFriends,
     saveFCMToken,
+    loadFriends,
   };
 });
