@@ -114,7 +114,7 @@ const getErrorMessage = (errorCode) => {
     <div class="form sign-in-form" v-if="tab === 'authorization'">
       <q-card>
         <q-input v-model="loginForm.email" label="Email"></q-input>
-        <q-input v-model="loginForm.password" label="Password"></q-input>
+        <q-input v-model="loginForm.password" label="Password" type="password"></q-input>
 
         <div v-if="errorMesaage" class="error-message">{{ errorMesaage }}</div>
 
@@ -132,8 +132,8 @@ const getErrorMessage = (errorCode) => {
       <q-card>
         <q-input v-model="registerForm.username" label="Username"></q-input>
         <q-input v-model="registerForm.email" label="Email"></q-input>
-        <q-input v-model="registerForm.password" label="Password"></q-input>
-        <q-input v-model="registerForm.confirmPassword" label="Confirm Password"></q-input>
+        <q-input v-model="registerForm.password" label="Password" type="password"></q-input>
+        <q-input v-model="registerForm.confirmPassword" label="Confirm Password" type="password"></q-input>
 
         <div v-if="errorMesaage" class="error-message">{{ errorMesaage }}</div>
 
