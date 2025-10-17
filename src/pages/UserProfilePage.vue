@@ -35,6 +35,16 @@ const updateProfile = async () => {
   console.log('Имя пользователя изменено на: ', userStore.userName)
 }
 
+const formatDate = (date) => {
+  if (!date) return 'Неизвестно';
+
+  return date.toLocaleDateString("ru-RU", {
+    day: "2-digit",
+    month: "2-digit",
+    year: "numeric"
+  });
+}
+
 onMounted(() => {
   userStore.loadFriends();
 })
@@ -79,7 +89,7 @@ onMounted(() => {
           </div>
           <div>
             <label class='content__form-label' for="">Bro c </label>
-            <p class="content__form-value">09.04.2025</p>
+            <p class="content__form-value">{{ formatDate(userStore.registrationDate) }}</p>
           </div>
         </div>
 

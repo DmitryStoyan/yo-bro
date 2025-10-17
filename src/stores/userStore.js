@@ -27,6 +27,7 @@ export const useUserStore = defineStore("user", () => {
   const searchResults = ref([]);
   const incomingRequests = ref([]);
   const friends = ref([]);
+  const registrationDate = ref(null);
 
   let unsubscribeFriendRequests = null;
 
@@ -39,7 +40,16 @@ export const useUserStore = defineStore("user", () => {
     const docSnap = await getDoc(docRef);
 
     if (docSnap.exists()) {
-      userName.value = docSnap.data().userName || "Имя не указано";
+      const data = docSnap.data();
+
+      userName.value = data.userName || "Имя не указано";
+      registrationDate.value = data.registrationDate
+        ? data.registrationDate.toDate()
+        : data.registrationDateLocal
+        ? data.registrationDateLocal.toDate
+          ? data.registrationDateLocal.toDate()
+          : new Date(data.registrationDateLocal)
+        : null;
     } else {
       userName.value = "Имя не указано!";
     }
@@ -345,6 +355,7 @@ export const useUserStore = defineStore("user", () => {
     searchResults,
     incomingRequests,
     friends,
+    registrationDate,
     fetchUserProfile,
     updateUserProfile,
     logOut,

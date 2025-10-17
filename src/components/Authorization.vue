@@ -5,7 +5,7 @@ import { useUserStore } from '@/stores/userStore';
 import { ref } from 'vue';
 import { useRouter } from 'vue-router';
 import Loader from './Loader.vue';
-import { getFirestore, doc, setDoc } from "firebase/firestore";
+import { getFirestore, doc, setDoc, serverTimestamp } from "firebase/firestore";
 
 
 const router = useRouter()
@@ -58,7 +58,9 @@ const signUp = async () => {
       userName: registerForm.value.username,
       userNameLower: registerForm.value.username.toLowerCase(),
       friends: [],
-      fcmTokens: []
+      fcmTokens: [],
+      registrationDate: serverTimestamp(), // время на сервере
+      registrationDateLocal: new Date() // локальная дата
     });
 
     console.log('Регистрация выполнена и профиль создан');
