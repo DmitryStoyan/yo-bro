@@ -1,5 +1,5 @@
 <script setup>
-import { ref, onMounted } from 'vue';
+import { ref, onMounted, computed } from 'vue';
 import { getAuth } from 'firebase/auth';
 import { getFirestore } from 'firebase/firestore'
 import { useUserStore } from '@/stores/userStore';
@@ -44,6 +44,18 @@ const formatDate = (date) => {
     year: "numeric"
   });
 }
+
+const daysSinceRegistration = computed(() => {
+  const regDate = userStore.registrationDate;
+
+  if (!regDate) return 0;
+
+  const now = new Date();
+  const diffMs = now - regDate;
+  const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24));
+
+  return diffDays;
+});
 
 onMounted(() => {
   userStore.loadFriends();
@@ -114,7 +126,7 @@ onMounted(() => {
             <p class="statistic-label">Отправлено Yo</p>
           </div>
           <div class="statistic-item">
-            <p class="statistic-value">23</p>
+            <p class="statistic-value">{{ daysSinceRegistration }}</p>
             <p class="statistic-label">Дней с первого Yo</p>
           </div>
         </div>
