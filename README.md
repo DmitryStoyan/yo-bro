@@ -2,4 +2,7 @@
 
 ### Главный экран
 
-![Home](./screenshots/all.gif)
+<p align="center">
+  <img src="./screenshots/all.gif" width="280" />
+  <img src="./screenshots/notifications.gif" width="280" />
+</p>
